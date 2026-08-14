@@ -18,13 +18,12 @@ export type DashboardResponse = {
 };
 
 // Get dashboard data
-export const getDashboard = createServerFn({ method: "GET" }).handler(
-  async () => {
+export const getDashboard = createServerFn({ method: "GET" })
+  .handler(async () => {
     try {
       const response = await api.get<DashboardResponse>("/dashboard");
       return response.data;
     } catch (error) {
       handleApiError(error);
     }
-  },
-);
+  });

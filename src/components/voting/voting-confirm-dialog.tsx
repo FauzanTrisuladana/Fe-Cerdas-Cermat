@@ -56,9 +56,8 @@ export function VotingConfirmDialog({
             </AlertDialogTitle>
           </div>
           <AlertDialogDescription>
-            Anda telah memilih{" "}
-            <strong className="text-blue-500">{selectedOption}</strong>. Apakah
-            Anda yakin?
+            Anda telah memilih <strong className="text-blue-500">{selectedOption}</strong>. Apakah Anda
+            yakin?
             <br />
           </AlertDialogDescription>
         </AlertDialogHeader>

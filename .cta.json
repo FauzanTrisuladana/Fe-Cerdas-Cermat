@@ -7,7 +7,7 @@
   "tailwind": true,
   "projectPreset": "default",
   "addOnOptions": {},
-  "git": false,
+  "git": true,
   "install": true,
   "intent": true,
   "routerOnly": false,

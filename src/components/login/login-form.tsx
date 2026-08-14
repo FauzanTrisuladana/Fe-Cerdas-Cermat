@@ -117,8 +117,8 @@ export function LoginForm({
             Admin Login Penilaian Lomba Nasi Goreng
           </CardTitle>
           <CardDescription className="text-sm">
-            Silakan login untuk mengakses halaman admin. Gunakan akun yang telah
-            terdaftar atau masuk dengan AkunGoogle.
+            Silakan login untuk mengakses halaman admin. Gunakan akun yang
+            telah terdaftar atau masuk dengan AkunGoogle.
           </CardDescription>
         </CardHeader>
         <CardContent>

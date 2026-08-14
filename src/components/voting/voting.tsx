@@ -17,31 +17,11 @@ import { submitVote } from "@/services/voteService";
 import type { VoteOption } from "@/components/voting/types";
 
 const votingOptions = [
-  {
-    id: "A",
-    title: "Pilih jika anda menyukai Nasi Goreng A",
-    color: "violet" as const,
-  },
-  {
-    id: "B",
-    title: "Pilih jika anda menyukai Nasi Goreng B",
-    color: "sky" as const,
-  },
-  {
-    id: "C",
-    title: "Pilih jika anda menyukai Nasi Goreng C",
-    color: "emerald" as const,
-  },
-  {
-    id: "D",
-    title: "Pilih jika anda menyukai Nasi Goreng D",
-    color: "amber" as const,
-  },
-  {
-    id: "E",
-    title: "Pilih jika anda menyukai Nasi Goreng E",
-    color: "rose" as const,
-  },
+  { id: "A", title: "Pilih jika anda menyukai Nasi Goreng A", color: "violet" as const },
+  { id: "B", title: "Pilih jika anda menyukai Nasi Goreng B", color: "sky" as const },
+  { id: "C", title: "Pilih jika anda menyukai Nasi Goreng C", color: "emerald" as const },
+  { id: "D", title: "Pilih jika anda menyukai Nasi Goreng D", color: "amber" as const },
+  { id: "E", title: "Pilih jika anda menyukai Nasi Goreng E", color: "rose" as const },
 ];
 
 const colorMap = {
@@ -138,9 +118,8 @@ export function VotingCard({
                 Juara Favorit Warga
               </CardTitle>
               <CardDescription className="text-base text-muted-foreground leading-relaxed mt-1">
-                Silakan pilih nasi goreng favorit Anda berdasarkan kriteria
-                Lomba Nasi Goreng Perumahan Nogotirto V. Pilih satu opsi di
-                bawah.
+                Silakan pilih nasi goreng favorit Anda berdasarkan kriteria Lomba
+                Nasi Goreng Perumahan Nogotirto V. Pilih satu opsi di bawah.
               </CardDescription>
             </div>
             <button

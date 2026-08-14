@@ -2,41 +2,11 @@ import type { DashboardStats } from "./types";
 import { Card, CardContent } from "@/components/ui/card";
 
 const voteChoices = [
-  {
-    key: "total_A" as const,
-    label: "Nasi Goreng A",
-    color: "text-violet-600",
-    iconBg: "bg-violet-50",
-    dot: "bg-violet-500",
-  },
-  {
-    key: "total_B" as const,
-    label: "Nasi Goreng B",
-    color: "text-sky-600",
-    iconBg: "bg-sky-50",
-    dot: "bg-sky-500",
-  },
-  {
-    key: "total_C" as const,
-    label: "Nasi Goreng C",
-    color: "text-emerald-600",
-    iconBg: "bg-emerald-50",
-    dot: "bg-emerald-500",
-  },
-  {
-    key: "total_D" as const,
-    label: "Nasi Goreng D",
-    color: "text-amber-600",
-    iconBg: "bg-amber-50",
-    dot: "bg-amber-500",
-  },
-  {
-    key: "total_E" as const,
-    label: "Nasi Goreng E",
-    color: "text-rose-600",
-    iconBg: "bg-rose-50",
-    dot: "bg-rose-500",
-  },
+  { key: "total_A" as const, label: "Nasi Goreng A", color: "text-violet-600", iconBg: "bg-violet-50", dot: "bg-violet-500" },
+  { key: "total_B" as const, label: "Nasi Goreng B", color: "text-sky-600", iconBg: "bg-sky-50", dot: "bg-sky-500" },
+  { key: "total_C" as const, label: "Nasi Goreng C", color: "text-emerald-600", iconBg: "bg-emerald-50", dot: "bg-emerald-500" },
+  { key: "total_D" as const, label: "Nasi Goreng D", color: "text-amber-600", iconBg: "bg-amber-50", dot: "bg-amber-500" },
+  { key: "total_E" as const, label: "Nasi Goreng E", color: "text-rose-600", iconBg: "bg-rose-50", dot: "bg-rose-500" },
 ];
 
 const defaultStats: DashboardStats = {
@@ -77,7 +47,9 @@ export function DashboardSummaryCards({
         {voteChoices.map((choice) => {
           const votes = stats[choice.key];
           const percent =
-            totalVotes > 0 ? ((votes / totalVotes) * 100).toFixed(1) : "0.0";
+            totalVotes > 0
+              ? ((votes / totalVotes) * 100).toFixed(1)
+              : "0.0";
 
           return (
             <Card
@@ -88,7 +60,9 @@ export function DashboardSummaryCards({
                 {/* Header row */}
                 <div className="flex items-center justify-between">
                   <div className={`flex items-center gap-2`}>
-                    <span className={`w-3 h-3 rounded-full ${choice.dot}`} />
+                    <span
+                      className={`w-3 h-3 rounded-full ${choice.dot}`}
+                    />
                     <p className="text-sm font-semibold text-slate-600">
                       {choice.label}
                     </p>

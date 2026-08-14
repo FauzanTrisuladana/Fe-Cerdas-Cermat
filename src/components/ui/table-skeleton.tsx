@@ -28,7 +28,7 @@ export function TableSkeleton({ columns, rows = 5 }: TableSkeletonProps) {
         <TableBody>
           {Array.from({ length: rows }).map((_, rowIdx) => (
             <TableRow key={rowIdx} className="border-slate-200">
-              {Array.from({ length: columns }).map((_col, colIdx) => (
+              {Array.from({ length: columns }).map((_, colIdx) => (
                 <TableCell key={colIdx} className="py-3">
                   <div className="h-4 w-full rounded bg-slate-100 animate-pulse" />
                 </TableCell>

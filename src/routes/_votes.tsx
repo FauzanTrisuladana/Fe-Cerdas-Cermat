@@ -5,6 +5,7 @@ export const Route = createFileRoute("/_votes")({
 });
 
 function AuthLayout() {
+
   // Autentikasi dan authorisasi dengan client-side
   // const isAuthorized = isAuthenticated();
 
