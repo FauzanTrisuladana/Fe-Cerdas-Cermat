@@ -1,0 +1,228 @@
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { TimScoreCard } from "./tim-score-card";
+import { TimerDisplay } from "./timer-display";
+import { useGameState } from "@/hooks/use-game-state";
+import type { CrosswordCell, CrosswordClue } from "./types";
+
+function playSound(type: "correct" | "wrong" | "countdown" | "timesup") {
+  const audioMap: Record<string, string> = {
+    correct: "/correct.mp3",
+    wrong: "/wrong.mp3",
+    countdown: "/countdown.mp3",
+    timesup: "/timesup.mp3",
+  };
+  try {
+    const audio = new Audio(audioMap[type]);
+    audio.volume = 0.8;
+    audio.play().catch(() => {});
+  } catch (_) {}
+}
+
+export function Babak3View() {
+  const { state, updateState } = useGameState();
+  const lastScoreChangeRef = useRef(state.lastScoreChange);
+  const soundTimestampRef = useRef(state.soundTrigger.timestamp);
+
+  // Trigger sound effect
+  useEffect(() => {
+    const trigger = state.soundTrigger;
+    if (trigger.type && trigger.timestamp !== soundTimestampRef.current) {
+      soundTimestampRef.current = trigger.timestamp;
+      playSound(trigger.type);
+    }
+  }, [state.soundTrigger]);
+
+  // Trigger center toast on score update
+  useEffect(() => {
+    const change = state.lastScoreChange;
+    if (change && change !== lastScoreChangeRef.current) {
+      lastScoreChangeRef.current = change;
+      const team = state.teams.find((t) => t.id === change.teamId);
+      if (team) {
+        const verb = change.delta > 0 ? "Menambahkan" : "Mengurangkan";
+        const absDelta = Math.abs(change.delta);
+        toast(`${verb} ${absDelta} poin ke ${team.name}`, {
+          position: "top-center",
+          duration: 4000,
+          className: cn(
+            "text-center font-bold text-lg border-2",
+            change.delta > 0
+              ? "bg-emerald-900/95 border-emerald-500 text-emerald-300"
+              : "bg-rose-900/95 border-rose-500 text-rose-300",
+          ),
+        });
+      }
+    }
+  }, [state.lastScoreChange, state.teams]);
+
+  // Find active clue
+  const activeClue = state.crossword.clues.find(
+    (c) => c.number === state.activeClueNum && c.direction === state.activeClueDir,
+  ) || null;
+
+  // ─── Tampilan transisi skor ───────────────────────────────────────────────
+  if (state.currentView === "score-transition") {
+    return (
+      <div className="flex flex-col h-full justify-between gap-6 py-4 animate-in fade-in duration-500">
+        <div className="text-center">
+          <h1 className="text-4xl font-black text-white uppercase tracking-wider">Skor Sementara</h1>
+          <p className="text-white/50 mt-1">
+            Menunggu Operator Admin untuk kembali ke permainan...
+          </p>
+        </div>
+        <div className="flex-1 grid grid-cols-5 gap-6 items-center px-4 max-h-[45vh]">
+          {state.teams.map((team, idx) => {
+            const isVisible =
+              state.tampilSkorMode === "all" ||
+              state.tampilSkorMode === String(idx + 1);
+
+            return (
+              <div
+                key={team.id}
+                className={cn(
+                  "transition-all duration-500 transform",
+                  isVisible
+                    ? "opacity-100 scale-100"
+                    : "opacity-20 scale-95 pointer-events-none filter blur-[1px]",
+                )}
+              >
+                <TimScoreCard
+                  team={team}
+                  lastScoreChange={state.lastScoreChange}
+                  size="lg"
+                  showTotal
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-full gap-3 py-2">
+      {/* Header */}
+      <div className="flex items-start justify-between border-b border-white/10 pb-3">
+        <div>
+          <h1 className="text-3xl font-black text-white tracking-wide">
+            Babak 3 — Teka Teki Silang
+          </h1>
+          {activeClue ? (
+            <div className="mt-2 bg-blue-950/80 border border-blue-500/30 rounded-xl px-5 py-2.5 max-w-2xl shadow-lg">
+              <span className="text-amber-400 font-extrabold text-base mr-2 uppercase tracking-wider">
+                Pertanyaan {activeClue.number} {activeClue.direction === "across" ? "Mendatar" : "Menurun"}:
+              </span>
+              <p className="text-white text-base font-semibold leading-relaxed mt-1">
+                {activeClue.text}
+              </p>
+            </div>
+          ) : (
+            <p className="text-white/50 text-sm mt-1">
+              Silakan pilih clue di panel admin untuk memulai kuis.
+            </p>
+          )}
+        </div>
+        <TimerDisplay
+          initialSeconds={state.timerRemaining}
+          isRunning={state.isTimerRunning}
+          onTimeout={() => {
+            updateState((prev) => ({ ...prev, isTimerRunning: false, timerRemaining: 0 }));
+          }}
+          size="md"
+        />
+      </div>
+
+      <div className="flex-1 flex items-center justify-center overflow-auto py-4">
+        <CrosswordGrid
+          grid={state.crossword.grid}
+          activeClue={activeClue}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ─── Grid TTS Component ───────────────────────────────────────────────────────
+
+function CrosswordGrid({
+  grid,
+  activeClue,
+}: {
+  grid: CrosswordCell[][];
+  activeClue: CrosswordClue | null;
+}) {
+  const CELL_SIZE = 44; // Scale up for projector
+
+  return (
+    <div
+      className="border-2 border-white/20 rounded-2xl overflow-hidden shadow-2xl p-2 bg-slate-900/60"
+      style={{
+        display: "grid",
+        gridTemplateColumns: `repeat(${grid[0]?.length ?? 1}, ${CELL_SIZE}px)`,
+        gridTemplateRows: `repeat(${grid.length}, ${CELL_SIZE}px)`,
+        gap: "4px",
+      }}
+    >
+      {grid.map((row) =>
+        row.map((cell) => {
+          if (cell.isBlocked) {
+            return (
+              <div
+                key={`${cell.row}-${cell.col}`}
+                className="bg-slate-950 rounded-md transition-colors duration-300"
+                style={{ width: CELL_SIZE, height: CELL_SIZE }}
+              />
+            );
+          }
+
+          // Check if cell is in active clue
+          const isInActiveClue = activeClue
+            ? activeClue.direction === "across"
+              ? cell.row === activeClue.startRow &&
+                cell.col >= activeClue.startCol &&
+                cell.col < activeClue.startCol + activeClue.answer.length
+              : cell.col === activeClue.startCol &&
+                cell.row >= activeClue.startRow &&
+                cell.row < activeClue.startRow + activeClue.answer.length
+            : false;
+
+          return (
+            <div
+              key={`${cell.row}-${cell.col}`}
+              className={cn(
+                "relative flex items-center justify-center rounded-md font-black select-none transition-all duration-300 border",
+                cell.highlight === "correct"
+                  ? "bg-emerald-600 border-emerald-400 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)] scale-105 animate-[bounce_0.5s_ease-in-out]"
+                  : cell.highlight === "wrong"
+                    ? "bg-rose-600 border-rose-400 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)] scale-95 animate-[shake_0.4s_ease-in-out]"
+                    : isInActiveClue
+                      ? "bg-amber-600/70 border-amber-400 text-amber-100 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
+                      : "bg-slate-800 border-white/10 text-white/90",
+              )}
+              style={{ width: CELL_SIZE, height: CELL_SIZE }}
+            >
+              {/* Nomor cell */}
+              {cell.number && (
+                <span className="absolute top-1 left-1.5 text-[10px] text-white/50 font-bold leading-none">
+                  {cell.number}
+                </span>
+              )}
+              {/* Huruf */}
+              <span
+                className={cn(
+                  "text-lg font-black transition-all duration-300",
+                  cell.revealed ? "opacity-100 scale-100" : "opacity-0 scale-75",
+                )}
+              >
+                {cell.letter}
+              </span>
+            </div>
+          );
+        }),
+      )}
+    </div>
+  );
+}

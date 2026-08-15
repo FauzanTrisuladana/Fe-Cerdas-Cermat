@@ -50,7 +50,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         <p className="text-muted-foreground">
           Halaman yang Anda cari tidak ditemukan.
         </p>
-        <Link to="/vote" className="text-blue-600 hover:underline">
+        <Link to="/proyektor" className="text-blue-600 hover:underline">
           Kembali ke Dashboard
         </Link>
       </div>

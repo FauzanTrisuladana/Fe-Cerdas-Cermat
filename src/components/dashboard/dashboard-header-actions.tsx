@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { RefreshCw } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import type { useQuery } from "@tanstack/react-query";
 
 const REFRESH_INTERVAL = 10;
 

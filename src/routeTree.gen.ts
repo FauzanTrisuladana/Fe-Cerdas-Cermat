@@ -10,33 +10,26 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as VotesRouteImport } from './routes/_votes'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as VotesVoteRouteImport } from './routes/_votes/vote'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminAuthRouteImport } from './routes/admin/_auth'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as ProyektorProyektorRouteImport } from './routes/proyektor/_proyektor'
 import { Route as AdminAuthDashboardRouteImport } from './routes/admin/_auth/dashboard'
+import { Route as AdminAuthSkorRouteImport } from './routes/admin/_auth/skor'
+import { Route as AdminAuthSoalBabakRouteImport } from './routes/admin/_auth/soal-babak'
 import { Route as AdminAuthUsersRouteImport } from './routes/admin/_auth/users'
+import { Route as AdminAuthWaktuRouteImport } from './routes/admin/_auth/waktu'
+import { Route as ProyektorProyektorIndexRouteImport } from './routes/proyektor/_proyektor/index'
+import { Route as ProyektorProyektorSkorRouteImport } from './routes/proyektor/_proyektor/skor'
+import { Route as ProyektorProyektorBabak1RouteImport } from './routes/proyektor/_proyektor/babak/1'
+import { Route as ProyektorProyektorBabak2RouteImport } from './routes/proyektor/_proyektor/babak/2'
+import { Route as ProyektorProyektorBabak3RouteImport } from './routes/proyektor/_proyektor/babak/3'
+import { Route as ProyektorProyektorBabak4RouteImport } from './routes/proyektor/_proyektor/babak/4'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const VotesRoute = VotesRouteImport.update({
-  id: '/_votes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VotesVoteRoute = VotesVoteRouteImport.update({
-  id: '/vote',
-  path: '/vote',
-  getParentRoute: () => VotesRoute,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
@@ -53,9 +46,24 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProyektorProyektorRoute = ProyektorProyektorRouteImport.update({
+  id: '/proyektor/_proyektor',
+  path: '/proyektor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAuthDashboardRoute = AdminAuthDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AdminAuthRoute,
+} as any)
+const AdminAuthSkorRoute = AdminAuthSkorRouteImport.update({
+  id: '/skor',
+  path: '/skor',
+  getParentRoute: () => AdminAuthRoute,
+} as any)
+const AdminAuthSoalBabakRoute = AdminAuthSoalBabakRouteImport.update({
+  id: '/soal-babak',
+  path: '/soal-babak',
   getParentRoute: () => AdminAuthRoute,
 } as any)
 const AdminAuthUsersRoute = AdminAuthUsersRouteImport.update({
@@ -63,77 +71,159 @@ const AdminAuthUsersRoute = AdminAuthUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AdminAuthRoute,
 } as any)
+const AdminAuthWaktuRoute = AdminAuthWaktuRouteImport.update({
+  id: '/waktu',
+  path: '/waktu',
+  getParentRoute: () => AdminAuthRoute,
+} as any)
+const ProyektorProyektorIndexRoute = ProyektorProyektorIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProyektorProyektorRoute,
+} as any)
+const ProyektorProyektorSkorRoute = ProyektorProyektorSkorRouteImport.update({
+  id: '/skor',
+  path: '/skor',
+  getParentRoute: () => ProyektorProyektorRoute,
+} as any)
+const ProyektorProyektorBabak1Route =
+  ProyektorProyektorBabak1RouteImport.update({
+    id: '/babak/1',
+    path: '/babak/1',
+    getParentRoute: () => ProyektorProyektorRoute,
+  } as any)
+const ProyektorProyektorBabak2Route =
+  ProyektorProyektorBabak2RouteImport.update({
+    id: '/babak/2',
+    path: '/babak/2',
+    getParentRoute: () => ProyektorProyektorRoute,
+  } as any)
+const ProyektorProyektorBabak3Route =
+  ProyektorProyektorBabak3RouteImport.update({
+    id: '/babak/3',
+    path: '/babak/3',
+    getParentRoute: () => ProyektorProyektorRoute,
+  } as any)
+const ProyektorProyektorBabak4Route =
+  ProyektorProyektorBabak4RouteImport.update({
+    id: '/babak/4',
+    path: '/babak/4',
+    getParentRoute: () => ProyektorProyektorRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/vote': typeof VotesVoteRoute
   '/admin': typeof AdminAuthRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/proyektor': typeof ProyektorProyektorRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/admin/dashboard': typeof AdminAuthDashboardRoute
+  '/admin/skor': typeof AdminAuthSkorRoute
+  '/admin/soal-babak': typeof AdminAuthSoalBabakRoute
   '/admin/users': typeof AdminAuthUsersRoute
+  '/admin/waktu': typeof AdminAuthWaktuRoute
+  '/proyektor/skor': typeof ProyektorProyektorSkorRoute
+  '/proyektor/': typeof ProyektorProyektorIndexRoute
+  '/proyektor/babak/1': typeof ProyektorProyektorBabak1Route
+  '/proyektor/babak/2': typeof ProyektorProyektorBabak2Route
+  '/proyektor/babak/3': typeof ProyektorProyektorBabak3Route
+  '/proyektor/babak/4': typeof ProyektorProyektorBabak4Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/vote': typeof VotesVoteRoute
   '/admin': typeof AdminIndexRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/dashboard': typeof AdminAuthDashboardRoute
+  '/admin/skor': typeof AdminAuthSkorRoute
+  '/admin/soal-babak': typeof AdminAuthSoalBabakRoute
   '/admin/users': typeof AdminAuthUsersRoute
+  '/admin/waktu': typeof AdminAuthWaktuRoute
+  '/proyektor/skor': typeof ProyektorProyektorSkorRoute
+  '/proyektor': typeof ProyektorProyektorIndexRoute
+  '/proyektor/babak/1': typeof ProyektorProyektorBabak1Route
+  '/proyektor/babak/2': typeof ProyektorProyektorBabak2Route
+  '/proyektor/babak/3': typeof ProyektorProyektorBabak3Route
+  '/proyektor/babak/4': typeof ProyektorProyektorBabak4Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_votes': typeof VotesRouteWithChildren
-  '/login': typeof LoginRoute
-  '/_votes/vote': typeof VotesVoteRoute
   '/admin/_auth': typeof AdminAuthRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/proyektor/_proyektor': typeof ProyektorProyektorRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/admin/_auth/dashboard': typeof AdminAuthDashboardRoute
+  '/admin/_auth/skor': typeof AdminAuthSkorRoute
+  '/admin/_auth/soal-babak': typeof AdminAuthSoalBabakRoute
   '/admin/_auth/users': typeof AdminAuthUsersRoute
+  '/admin/_auth/waktu': typeof AdminAuthWaktuRoute
+  '/proyektor/_proyektor/skor': typeof ProyektorProyektorSkorRoute
+  '/proyektor/_proyektor/': typeof ProyektorProyektorIndexRoute
+  '/proyektor/_proyektor/babak/1': typeof ProyektorProyektorBabak1Route
+  '/proyektor/_proyektor/babak/2': typeof ProyektorProyektorBabak2Route
+  '/proyektor/_proyektor/babak/3': typeof ProyektorProyektorBabak3Route
+  '/proyektor/_proyektor/babak/4': typeof ProyektorProyektorBabak4Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/login'
-    | '/vote'
     | '/admin'
     | '/admin/login'
+    | '/proyektor'
     | '/admin/'
     | '/admin/dashboard'
+    | '/admin/skor'
+    | '/admin/soal-babak'
     | '/admin/users'
+    | '/admin/waktu'
+    | '/proyektor/skor'
+    | '/proyektor/'
+    | '/proyektor/babak/1'
+    | '/proyektor/babak/2'
+    | '/proyektor/babak/3'
+    | '/proyektor/babak/4'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/login'
-    | '/vote'
     | '/admin'
     | '/admin/login'
     | '/admin/dashboard'
+    | '/admin/skor'
+    | '/admin/soal-babak'
     | '/admin/users'
+    | '/admin/waktu'
+    | '/proyektor/skor'
+    | '/proyektor'
+    | '/proyektor/babak/1'
+    | '/proyektor/babak/2'
+    | '/proyektor/babak/3'
+    | '/proyektor/babak/4'
   id:
     | '__root__'
     | '/'
-    | '/_votes'
-    | '/login'
-    | '/_votes/vote'
     | '/admin/_auth'
     | '/admin/login'
+    | '/proyektor/_proyektor'
     | '/admin/'
     | '/admin/_auth/dashboard'
+    | '/admin/_auth/skor'
+    | '/admin/_auth/soal-babak'
     | '/admin/_auth/users'
+    | '/admin/_auth/waktu'
+    | '/proyektor/_proyektor/skor'
+    | '/proyektor/_proyektor/'
+    | '/proyektor/_proyektor/babak/1'
+    | '/proyektor/_proyektor/babak/2'
+    | '/proyektor/_proyektor/babak/3'
+    | '/proyektor/_proyektor/babak/4'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  VotesRoute: typeof VotesRouteWithChildren
-  LoginRoute: typeof LoginRoute
   AdminAuthRoute: typeof AdminAuthRouteWithChildren
   AdminLoginRoute: typeof AdminLoginRoute
+  ProyektorProyektorRoute: typeof ProyektorProyektorRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -145,27 +235,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_votes': {
-      id: '/_votes'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof VotesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_votes/vote': {
-      id: '/_votes/vote'
-      path: '/vote'
-      fullPath: '/vote'
-      preLoaderRoute: typeof VotesVoteRouteImport
-      parentRoute: typeof VotesRoute
     }
     '/admin/': {
       id: '/admin/'
@@ -188,11 +257,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/proyektor/_proyektor': {
+      id: '/proyektor/_proyektor'
+      path: '/proyektor'
+      fullPath: '/proyektor'
+      preLoaderRoute: typeof ProyektorProyektorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/_auth/dashboard': {
       id: '/admin/_auth/dashboard'
       path: '/dashboard'
       fullPath: '/admin/dashboard'
       preLoaderRoute: typeof AdminAuthDashboardRouteImport
+      parentRoute: typeof AdminAuthRoute
+    }
+    '/admin/_auth/skor': {
+      id: '/admin/_auth/skor'
+      path: '/skor'
+      fullPath: '/admin/skor'
+      preLoaderRoute: typeof AdminAuthSkorRouteImport
+      parentRoute: typeof AdminAuthRoute
+    }
+    '/admin/_auth/soal-babak': {
+      id: '/admin/_auth/soal-babak'
+      path: '/soal-babak'
+      fullPath: '/admin/soal-babak'
+      preLoaderRoute: typeof AdminAuthSoalBabakRouteImport
       parentRoute: typeof AdminAuthRoute
     }
     '/admin/_auth/users': {
@@ -202,39 +292,104 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuthUsersRouteImport
       parentRoute: typeof AdminAuthRoute
     }
+    '/admin/_auth/waktu': {
+      id: '/admin/_auth/waktu'
+      path: '/waktu'
+      fullPath: '/admin/waktu'
+      preLoaderRoute: typeof AdminAuthWaktuRouteImport
+      parentRoute: typeof AdminAuthRoute
+    }
+    '/proyektor/_proyektor/': {
+      id: '/proyektor/_proyektor/'
+      path: '/'
+      fullPath: '/proyektor/'
+      preLoaderRoute: typeof ProyektorProyektorIndexRouteImport
+      parentRoute: typeof ProyektorProyektorRoute
+    }
+    '/proyektor/_proyektor/skor': {
+      id: '/proyektor/_proyektor/skor'
+      path: '/skor'
+      fullPath: '/proyektor/skor'
+      preLoaderRoute: typeof ProyektorProyektorSkorRouteImport
+      parentRoute: typeof ProyektorProyektorRoute
+    }
+    '/proyektor/_proyektor/babak/1': {
+      id: '/proyektor/_proyektor/babak/1'
+      path: '/babak/1'
+      fullPath: '/proyektor/babak/1'
+      preLoaderRoute: typeof ProyektorProyektorBabak1RouteImport
+      parentRoute: typeof ProyektorProyektorRoute
+    }
+    '/proyektor/_proyektor/babak/2': {
+      id: '/proyektor/_proyektor/babak/2'
+      path: '/babak/2'
+      fullPath: '/proyektor/babak/2'
+      preLoaderRoute: typeof ProyektorProyektorBabak2RouteImport
+      parentRoute: typeof ProyektorProyektorRoute
+    }
+    '/proyektor/_proyektor/babak/3': {
+      id: '/proyektor/_proyektor/babak/3'
+      path: '/babak/3'
+      fullPath: '/proyektor/babak/3'
+      preLoaderRoute: typeof ProyektorProyektorBabak3RouteImport
+      parentRoute: typeof ProyektorProyektorRoute
+    }
+    '/proyektor/_proyektor/babak/4': {
+      id: '/proyektor/_proyektor/babak/4'
+      path: '/babak/4'
+      fullPath: '/proyektor/babak/4'
+      preLoaderRoute: typeof ProyektorProyektorBabak4RouteImport
+      parentRoute: typeof ProyektorProyektorRoute
+    }
   }
 }
 
-interface VotesRouteChildren {
-  VotesVoteRoute: typeof VotesVoteRoute
-}
-
-const VotesRouteChildren: VotesRouteChildren = {
-  VotesVoteRoute: VotesVoteRoute,
-}
-
-const VotesRouteWithChildren = VotesRoute._addFileChildren(VotesRouteChildren)
-
 interface AdminAuthRouteChildren {
   AdminAuthDashboardRoute: typeof AdminAuthDashboardRoute
+  AdminAuthSkorRoute: typeof AdminAuthSkorRoute
+  AdminAuthSoalBabakRoute: typeof AdminAuthSoalBabakRoute
   AdminAuthUsersRoute: typeof AdminAuthUsersRoute
+  AdminAuthWaktuRoute: typeof AdminAuthWaktuRoute
 }
 
 const AdminAuthRouteChildren: AdminAuthRouteChildren = {
   AdminAuthDashboardRoute: AdminAuthDashboardRoute,
+  AdminAuthSkorRoute: AdminAuthSkorRoute,
+  AdminAuthSoalBabakRoute: AdminAuthSoalBabakRoute,
   AdminAuthUsersRoute: AdminAuthUsersRoute,
+  AdminAuthWaktuRoute: AdminAuthWaktuRoute,
 }
 
 const AdminAuthRouteWithChildren = AdminAuthRoute._addFileChildren(
   AdminAuthRouteChildren,
 )
 
+interface ProyektorProyektorRouteChildren {
+  ProyektorProyektorSkorRoute: typeof ProyektorProyektorSkorRoute
+  ProyektorProyektorIndexRoute: typeof ProyektorProyektorIndexRoute
+  ProyektorProyektorBabak1Route: typeof ProyektorProyektorBabak1Route
+  ProyektorProyektorBabak2Route: typeof ProyektorProyektorBabak2Route
+  ProyektorProyektorBabak3Route: typeof ProyektorProyektorBabak3Route
+  ProyektorProyektorBabak4Route: typeof ProyektorProyektorBabak4Route
+}
+
+const ProyektorProyektorRouteChildren: ProyektorProyektorRouteChildren = {
+  ProyektorProyektorSkorRoute: ProyektorProyektorSkorRoute,
+  ProyektorProyektorIndexRoute: ProyektorProyektorIndexRoute,
+  ProyektorProyektorBabak1Route: ProyektorProyektorBabak1Route,
+  ProyektorProyektorBabak2Route: ProyektorProyektorBabak2Route,
+  ProyektorProyektorBabak3Route: ProyektorProyektorBabak3Route,
+  ProyektorProyektorBabak4Route: ProyektorProyektorBabak4Route,
+}
+
+const ProyektorProyektorRouteWithChildren =
+  ProyektorProyektorRoute._addFileChildren(ProyektorProyektorRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  VotesRoute: VotesRouteWithChildren,
-  LoginRoute: LoginRoute,
   AdminAuthRoute: AdminAuthRouteWithChildren,
   AdminLoginRoute: AdminLoginRoute,
+  ProyektorProyektorRoute: ProyektorProyektorRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
 }
 export const routeTree = rootRouteImport
