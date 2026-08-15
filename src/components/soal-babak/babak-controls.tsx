@@ -1,4 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Monitor, Trophy } from "lucide-react";
 import type { GameStateData } from "@/hooks/use-game-state";
@@ -9,13 +15,13 @@ interface BabakControlsProps {
 }
 
 export function BabakControls({ state, onSetView }: BabakControlsProps) {
-
   return (
     <Card>
       <CardHeader>
         <CardTitle>Kontrol Alur Proyektor</CardTitle>
         <CardDescription>
-          Pilih halaman atau babak aktif untuk langsung ditampilkan di layar proyektor.
+          Pilih halaman atau babak aktif untuk langsung ditampilkan di layar
+          proyektor.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-wrap gap-2">
@@ -60,7 +66,9 @@ export function BabakControls({ state, onSetView }: BabakControlsProps) {
           Papan Skor Akhir
         </Button>
         <Button
-          variant={state.currentView === "score-transition" ? "default" : "outline"}
+          variant={
+            state.currentView === "score-transition" ? "default" : "outline"
+          }
           onClick={() => onSetView("score-transition")}
           className="bg-amber-600 hover:bg-amber-700 text-white"
         >

@@ -1,6 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
-import type { Team, CrosswordState, ScoreChange } from "@/components/proyektor/types";
-import { DUMMY_TEAMS, DUMMY_CROSSWORD } from "@/components/proyektor/dummy-data";
+import type {
+  Team,
+  CrosswordState,
+  ScoreChange,
+} from "@/components/proyektor/types";
+import {
+  DUMMY_TEAMS,
+  DUMMY_CROSSWORD,
+} from "@/components/proyektor/dummy-data";
 
 export interface GameStateData {
   teams: Team[];
@@ -75,13 +82,16 @@ export function useGameState() {
   }, []);
 
   // Update helper
-  const updateState = useCallback((updater: (prev: GameStateData) => GameStateData) => {
-    setState((prev) => {
-      const next = updater(prev);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      return next;
-    });
-  }, []);
+  const updateState = useCallback(
+    (updater: (prev: GameStateData) => GameStateData) => {
+      setState((prev) => {
+        const next = updater(prev);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+        return next;
+      });
+    },
+    [],
+  );
 
   const resetState = useCallback(() => {
     updateState(() => DEFAULT_STATE);

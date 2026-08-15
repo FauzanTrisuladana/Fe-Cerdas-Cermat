@@ -1,4 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DUMMY_IMAGE_QUESTIONS } from "@/components/proyektor/dummy-data";
@@ -10,14 +16,18 @@ interface Babak2ControlsProps {
   onSetRevealCount: (count: number) => void;
 }
 
-export function Babak2Controls({ state, onSetQuestion, onSetRevealCount }: Babak2ControlsProps) {
-
+export function Babak2Controls({
+  state,
+  onSetQuestion,
+  onSetRevealCount,
+}: Babak2ControlsProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Pengendali Babak 2 — Tebak Gambar</CardTitle>
         <CardDescription>
-          Pilih soal tebak gambar aktif dan kelola jumlah potongan gambar yang terbuka.
+          Pilih soal tebak gambar aktif dan kelola jumlah potongan gambar yang
+          terbuka.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
@@ -27,7 +37,9 @@ export function Babak2Controls({ state, onSetQuestion, onSetRevealCount }: Babak
             {DUMMY_IMAGE_QUESTIONS.map((_, idx) => (
               <Button
                 key={idx}
-                variant={state.babak2QuestionIdx === idx ? "default" : "outline"}
+                variant={
+                  state.babak2QuestionIdx === idx ? "default" : "outline"
+                }
                 onClick={() => onSetQuestion(idx)}
                 className="w-10 h-10 p-0 font-bold"
               >
@@ -50,7 +62,8 @@ export function Babak2Controls({ state, onSetQuestion, onSetRevealCount }: Babak
               </Badge>
             </div>
             <div className="text-xs text-muted-foreground mt-2">
-              Gambar ini memiliki 4 grid potongan gambar. Operator dapat membuka potongan gambar satu per satu secara berurutan.
+              Gambar ini memiliki 4 grid potongan gambar. Operator dapat membuka
+              potongan gambar satu per satu secara berurutan.
             </div>
           </div>
 
@@ -63,7 +76,9 @@ export function Babak2Controls({ state, onSetQuestion, onSetRevealCount }: Babak
               {[1, 2, 3, 4].map((num) => (
                 <Button
                   key={num}
-                  variant={state.babak2RevealedCount === num ? "default" : "outline"}
+                  variant={
+                    state.babak2RevealedCount === num ? "default" : "outline"
+                  }
                   onClick={() => onSetRevealCount(num)}
                   className="flex-1 font-bold text-lg"
                 >
@@ -78,14 +93,19 @@ export function Babak2Controls({ state, onSetQuestion, onSetRevealCount }: Babak
         <div>
           <h4 className="text-sm font-bold mb-3">Preview Gambar (Operator):</h4>
           <div className="grid grid-cols-4 gap-2">
-            {DUMMY_IMAGE_QUESTIONS[state.babak2QuestionIdx].images.map((src, idx) => (
-              <div key={idx} className="relative aspect-video border rounded-lg overflow-hidden bg-slate-100">
-                <img src={src} className="w-full h-full object-cover" />
-                <div className="absolute top-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
-                  {idx + 1}
+            {DUMMY_IMAGE_QUESTIONS[state.babak2QuestionIdx].images.map(
+              (src, idx) => (
+                <div
+                  key={idx}
+                  className="relative aspect-video border rounded-lg overflow-hidden bg-slate-100"
+                >
+                  <img src={src} className="w-full h-full object-cover" />
+                  <div className="absolute top-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+                    {idx + 1}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ),
+            )}
           </div>
         </div>
       </CardContent>

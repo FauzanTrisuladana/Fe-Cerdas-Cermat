@@ -8,11 +8,12 @@ interface ScoreSummaryProps {
 }
 
 export function ScoreSummary({ state }: ScoreSummaryProps) {
-
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Total Skor Kumulatif</CardTitle>
+        <CardTitle className="text-sm font-medium">
+          Total Skor Kumulatif
+        </CardTitle>
         <Trophy className="h-4 w-4 text-amber-500" />
       </CardHeader>
       <CardContent className="flex flex-col gap-4">

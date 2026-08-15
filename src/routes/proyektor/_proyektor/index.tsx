@@ -62,7 +62,9 @@ function ProyektorJudul() {
       {/* Link navigasi ke halaman lain (DEV only) */}
       {import.meta.env.DEV && (
         <div className="relative z-10 flex flex-wrap gap-2 justify-center">
-          <p className="text-white/30 text-xs w-full text-center">[DEV] Navigasi cepat</p>
+          <p className="text-white/30 text-xs w-full text-center">
+            [DEV] Navigasi cepat
+          </p>
           {[1, 2, 3, 4].map((b) => (
             <Link
               key={b}

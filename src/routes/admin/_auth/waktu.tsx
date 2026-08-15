@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { useGameState } from "@/hooks/use-game-state";
 import { TimerDisplay } from "@/components/waktu/timer-display";
 import { DurationSettings } from "@/components/waktu/duration-settings";
+import HeaderComp from "@/components/shared/header-comp";
+import { Clock } from "lucide-react";
 
 export const Route = createFileRoute("/admin/_auth/waktu")({
   component: AdminWaktuPage,
@@ -76,14 +78,12 @@ function AdminWaktuPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-4">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-black tracking-tight">Pengendali Waktu & Timer</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Kelola durasi pengerjaan soal cerdas cermat secara terpusat.
-        </p>
-      </div>
+    <>
+      <HeaderComp
+        title="Pengendali Waktu & Timer"
+        description="Kelola durasi pengerjaan soal cerdas cermat secara terpusat."
+        icon={<Clock />}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Kontrol Stopwatch */}
@@ -97,6 +97,6 @@ function AdminWaktuPage() {
         {/* Set Waktu Template / Custom */}
         <DurationSettings onSetDuration={handleSetDuration} />
       </div>
-    </div>
+    </>
   );
 }

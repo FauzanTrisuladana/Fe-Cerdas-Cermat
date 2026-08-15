@@ -39,7 +39,6 @@ export function Babak14View({ babakNumber }: Babak14ViewProps) {
   const babakName =
     babakNumber === 1 ? "Babak 1 — Paket Soal" : "Babak 4 — Soal Rebutan";
 
-
   return (
     <div className="flex flex-col h-full justify-between gap-6 py-4">
       {/* Header Babak */}
@@ -56,7 +55,11 @@ export function Babak14View({ babakNumber }: Babak14ViewProps) {
           initialSeconds={state.timerRemaining}
           isRunning={state.isTimerRunning}
           onTimeout={() => {
-            updateState((prev) => ({ ...prev, isTimerRunning: false, timerRemaining: 0 }));
+            updateState((prev) => ({
+              ...prev,
+              isTimerRunning: false,
+              timerRemaining: 0,
+            }));
           }}
           size="xl"
         />

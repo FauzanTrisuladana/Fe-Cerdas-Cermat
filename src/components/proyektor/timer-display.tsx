@@ -64,10 +64,7 @@ export function TimerDisplay({
 
   return (
     <div
-      className={cn(
-        "flex flex-col items-center gap-2 select-none",
-        className,
-      )}
+      className={cn("flex flex-col items-center gap-2 select-none", className)}
     >
       <span className="text-white/60 text-sm font-semibold tracking-widest uppercase">
         Waktu
@@ -90,11 +87,7 @@ export function TimerDisplay({
         <div
           className={cn(
             "h-full rounded-full transition-all duration-1000 ease-linear",
-            isDone
-              ? "bg-rose-500"
-              : isLow
-                ? "bg-amber-400"
-                : "bg-emerald-400",
+            isDone ? "bg-rose-500" : isLow ? "bg-amber-400" : "bg-emerald-400",
           )}
           style={{
             width: `${Math.max(0, (seconds / initialSeconds) * 100)}%`,

@@ -1,5 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Trophy } from "lucide-react";
 import type { GameStateData } from "@/hooks/use-game-state";
 import { getTotalScore } from "@/components/proyektor/dummy-data";
@@ -9,7 +16,6 @@ interface MiniScoreboardProps {
 }
 
 export function MiniScoreboard({ state }: MiniScoreboardProps) {
-
   return (
     <Card>
       <CardHeader>

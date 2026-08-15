@@ -33,7 +33,8 @@ export function Babak2View() {
     }
   }, [state.lastScoreChange, state.teams]);
 
-  const currentQuestion = DUMMY_IMAGE_QUESTIONS[state.babak2QuestionIdx] || DUMMY_IMAGE_QUESTIONS[0];
+  const currentQuestion =
+    DUMMY_IMAGE_QUESTIONS[state.babak2QuestionIdx] || DUMMY_IMAGE_QUESTIONS[0];
   const totalQuestions = DUMMY_IMAGE_QUESTIONS.length;
 
   // ─── Tampilan transisi skor ───────────────────────────────────────────────
@@ -41,7 +42,9 @@ export function Babak2View() {
     return (
       <div className="flex flex-col h-full justify-between gap-6 py-4 animate-in fade-in duration-500">
         <div className="text-center">
-          <h1 className="text-4xl font-black text-white uppercase tracking-wider">Skor Sementara</h1>
+          <h1 className="text-4xl font-black text-white uppercase tracking-wider">
+            Skor Sementara
+          </h1>
           <p className="text-white/50 mt-1">
             Menunggu Operator Admin untuk memindahkan ke soal berikutnya...
           </p>
@@ -93,7 +96,11 @@ export function Babak2View() {
           initialSeconds={state.timerRemaining}
           isRunning={state.isTimerRunning}
           onTimeout={() => {
-            updateState((prev) => ({ ...prev, isTimerRunning: false, timerRemaining: 0 }));
+            updateState((prev) => ({
+              ...prev,
+              isTimerRunning: false,
+              timerRemaining: 0,
+            }));
           }}
           size="md"
         />

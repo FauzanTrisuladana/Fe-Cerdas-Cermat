@@ -108,8 +108,10 @@ export function SkorTable({ completedRounds = [1, 2, 3] }: SkorTableProps) {
               Jumlah
             </td>
             {completedRounds.map((round) => {
-              const scoreKey: Record<number, keyof (typeof state.teams)[0]["scores"]> =
-                { 1: "babak1", 2: "babak2", 3: "babak3", 4: "babak4" };
+              const scoreKey: Record<
+                number,
+                keyof (typeof state.teams)[0]["scores"]
+              > = { 1: "babak1", 2: "babak2", 3: "babak3", 4: "babak4" };
               const colTotal = state.teams.reduce(
                 (sum, t) => sum + t.scores[scoreKey[round]],
                 0,

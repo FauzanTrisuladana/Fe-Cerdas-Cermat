@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -53,7 +59,9 @@ export function DurationSettings({ onSetDuration }: DurationSettingsProps) {
           <h4 className="text-sm font-bold mb-3">Durasi Kustom:</h4>
           <div className="flex items-end gap-3">
             <div className="flex-1">
-              <span className="text-xs text-muted-foreground font-semibold">Menit</span>
+              <span className="text-xs text-muted-foreground font-semibold">
+                Menit
+              </span>
               <Input
                 type="number"
                 min="0"
@@ -64,7 +72,9 @@ export function DurationSettings({ onSetDuration }: DurationSettingsProps) {
               />
             </div>
             <div className="flex-1">
-              <span className="text-xs text-muted-foreground font-semibold">Detik</span>
+              <span className="text-xs text-muted-foreground font-semibold">
+                Detik
+              </span>
               <Input
                 type="number"
                 min="0"

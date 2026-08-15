@@ -6,6 +6,8 @@ import { Babak2Controls } from "@/components/soal-babak/babak2-controls";
 import { Babak3Controls } from "@/components/soal-babak/babak3-controls";
 import { MiniScoreboard } from "@/components/soal-babak/mini-scoreboard";
 import { SoundController } from "@/components/soal-babak/sound-controller";
+import HeaderComp from "@/components/shared/header-comp";
+import { Monitor } from "lucide-react";
 import type { CrosswordClue } from "@/components/proyektor/types";
 
 export const Route = createFileRoute("/admin/_auth/soal-babak")({
@@ -65,14 +67,17 @@ function AdminSoalBabakPage() {
     setTtsInput("");
   };
 
-  const activeClue = state.crossword.clues.find(
-    (c) => c.number === state.activeClueNum && c.direction === state.activeClueDir,
-  ) || null;
+  const activeClue =
+    state.crossword.clues.find(
+      (c) =>
+        c.number === state.activeClueNum && c.direction === state.activeClueDir,
+    ) || null;
 
   // Verifikasi jawaban sementara (check)
   const handleCheckTTS = () => {
     if (!activeClue) return;
-    const isCorrect = ttsInput.toLowerCase().trim() === activeClue.answer.toLowerCase().trim();
+    const isCorrect =
+      ttsInput.toLowerCase().trim() === activeClue.answer.toLowerCase().trim();
 
     if (isCorrect) {
       handleRevealTTS();
@@ -82,9 +87,14 @@ function AdminSoalBabakPage() {
       updateState((prev) => {
         const nextGrid = prev.crossword.grid.map((row) =>
           row.map((cell) => {
-            const inRange = activeClue.direction === "across"
-              ? cell.row === activeClue.startRow && cell.col >= activeClue.startCol && cell.col < activeClue.startCol + activeClue.answer.length
-              : cell.col === activeClue.startCol && cell.row >= activeClue.startRow && cell.row < activeClue.startRow + activeClue.answer.length;
+            const inRange =
+              activeClue.direction === "across"
+                ? cell.row === activeClue.startRow &&
+                  cell.col >= activeClue.startCol &&
+                  cell.col < activeClue.startCol + activeClue.answer.length
+                : cell.col === activeClue.startCol &&
+                  cell.row >= activeClue.startRow &&
+                  cell.row < activeClue.startRow + activeClue.answer.length;
 
             if (inRange) {
               return { ...cell, highlight: "wrong" as const };
@@ -102,7 +112,11 @@ function AdminSoalBabakPage() {
       setTimeout(() => {
         updateState((prev) => {
           const nextGrid = prev.crossword.grid.map((row) =>
-            row.map((cell) => (cell.highlight === "wrong" ? { ...cell, highlight: undefined } : cell)),
+            row.map((cell) =>
+              cell.highlight === "wrong"
+                ? { ...cell, highlight: undefined }
+                : cell,
+            ),
           );
           return {
             ...prev,
@@ -121,14 +135,20 @@ function AdminSoalBabakPage() {
     updateState((prev) => {
       const nextGrid = prev.crossword.grid.map((row) =>
         row.map((cell) => {
-          const inRange = activeClue.direction === "across"
-            ? cell.row === activeClue.startRow && cell.col >= activeClue.startCol && cell.col < activeClue.startCol + activeClue.answer.length
-            : cell.col === activeClue.startCol && cell.row >= activeClue.startRow && cell.row < activeClue.startRow + activeClue.answer.length;
+          const inRange =
+            activeClue.direction === "across"
+              ? cell.row === activeClue.startRow &&
+                cell.col >= activeClue.startCol &&
+                cell.col < activeClue.startCol + activeClue.answer.length
+              : cell.col === activeClue.startCol &&
+                cell.row >= activeClue.startRow &&
+                cell.row < activeClue.startRow + activeClue.answer.length;
 
           if (inRange) {
-            const letterIdx = activeClue.direction === "across"
-              ? cell.col - activeClue.startCol
-              : cell.row - activeClue.startRow;
+            const letterIdx =
+              activeClue.direction === "across"
+                ? cell.col - activeClue.startCol
+                : cell.row - activeClue.startRow;
             return {
               ...cell,
               letter: activeClue.answer[letterIdx],
@@ -160,7 +180,11 @@ function AdminSoalBabakPage() {
     setTimeout(() => {
       updateState((prev) => {
         const nextGrid = prev.crossword.grid.map((row) =>
-          row.map((cell) => (cell.highlight === "correct" ? { ...cell, highlight: undefined } : cell)),
+          row.map((cell) =>
+            cell.highlight === "correct"
+              ? { ...cell, highlight: undefined }
+              : cell,
+          ),
         );
         return {
           ...prev,
@@ -171,14 +195,12 @@ function AdminSoalBabakPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-4">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-black tracking-tight">Pengendali Soal & Babak</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Kontrol halaman proyektor, pemilihan soal, reveal gambar, dan verifikasi TTS.
-        </p>
-      </div>
+    <>
+      <HeaderComp
+        title="Pengendali Soal & Babak"
+        description="Kontrol halaman proyektor, pemilihan soal, reveal gambar, dan verifikasi TTS."
+        icon={<Monitor />}
+      />
 
       {/* Grid Utama */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -214,6 +236,6 @@ function AdminSoalBabakPage() {
           <SoundController onTriggerSound={triggerSound} />
         </div>
       </div>
-    </div>
+    </>
   );
 }

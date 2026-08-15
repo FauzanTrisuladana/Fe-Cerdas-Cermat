@@ -1,7 +1,20 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { GameStateData } from "@/hooks/use-game-state";
 
@@ -24,7 +37,6 @@ export function ScoreTable({
   onManualSetScore,
   onApplyManualScore,
 }: ScoreTableProps) {
-
   const scoreKeys: Record<number, "babak1" | "babak2" | "babak3" | "babak4"> = {
     1: "babak1",
     2: "babak2",
@@ -67,9 +79,7 @@ export function ScoreTable({
             {state.teams.map((team) => {
               const currentScore = team.scores[scoreKeys[selectedRound]];
               const inputValue =
-                tempScores[team.id] !== undefined
-                  ? tempScores[team.id]
-                  : currentScore;
+                team.id in tempScores ? tempScores[team.id] : currentScore;
 
               return (
                 <TableRow key={team.id}>
@@ -121,7 +131,9 @@ export function ScoreTable({
                         type="number"
                         className="w-20 text-center font-bold"
                         value={inputValue}
-                        onChange={(e) => onManualSetScore(team.id, e.target.value)}
+                        onChange={(e) =>
+                          onManualSetScore(team.id, e.target.value)
+                        }
                       />
                       <Button
                         size="sm"

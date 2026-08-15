@@ -21,7 +21,7 @@ export function TimScoreCard({
   const isRecentChange =
     lastScoreChange?.teamId === team.id &&
     Date.now() - lastScoreChange.timestamp < 5000;
-  const delta = isRecentChange ? lastScoreChange?.delta : null;
+  const delta = isRecentChange ? lastScoreChange.delta : null;
 
   const sizeClasses = {
     sm: "p-3 gap-2",
@@ -94,9 +94,7 @@ export function TimScoreCard({
       )}
 
       {/* Accent bar bawah */}
-      <div
-        className={cn("absolute bottom-0 left-0 right-0 h-1", colors.bg)}
-      />
+      <div className={cn("absolute bottom-0 left-0 right-0 h-1", colors.bg)} />
     </div>
   );
 }

@@ -1,4 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Clock, Play, Pause, RotateCcw } from "lucide-react";
 import type { GameStateData } from "@/hooks/use-game-state";
@@ -10,8 +16,12 @@ interface TimerDisplayProps {
   onResetTimer: () => void;
 }
 
-export function TimerDisplay({ state, onPauseTimer, onStartTimer, onResetTimer }: TimerDisplayProps) {
-
+export function TimerDisplay({
+  state,
+  onPauseTimer,
+  onStartTimer,
+  onResetTimer,
+}: TimerDisplayProps) {
   return (
     <Card className="flex flex-col justify-between">
       <CardHeader>
@@ -20,7 +30,8 @@ export function TimerDisplay({ state, onPauseTimer, onStartTimer, onResetTimer }
           Stopwatch Operator
         </CardTitle>
         <CardDescription>
-          Gunakan tombol di bawah ini untuk memulai, menjeda, atau mengatur ulang timer proyektor.
+          Gunakan tombol di bawah ini untuk memulai, menjeda, atau mengatur
+          ulang timer proyektor.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center gap-8 py-8">

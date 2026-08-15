@@ -58,16 +58,20 @@ export function Babak3View() {
   }, [state.lastScoreChange, state.teams]);
 
   // Find active clue
-  const activeClue = state.crossword.clues.find(
-    (c) => c.number === state.activeClueNum && c.direction === state.activeClueDir,
-  ) || null;
+  const activeClue =
+    state.crossword.clues.find(
+      (c) =>
+        c.number === state.activeClueNum && c.direction === state.activeClueDir,
+    ) || null;
 
   // ─── Tampilan transisi skor ───────────────────────────────────────────────
   if (state.currentView === "score-transition") {
     return (
       <div className="flex flex-col h-full justify-between gap-6 py-4 animate-in fade-in duration-500">
         <div className="text-center">
-          <h1 className="text-4xl font-black text-white uppercase tracking-wider">Skor Sementara</h1>
+          <h1 className="text-4xl font-black text-white uppercase tracking-wider">
+            Skor Sementara
+          </h1>
           <p className="text-white/50 mt-1">
             Menunggu Operator Admin untuk kembali ke permainan...
           </p>
@@ -113,7 +117,8 @@ export function Babak3View() {
           {activeClue ? (
             <div className="mt-2 bg-blue-950/80 border border-blue-500/30 rounded-xl px-5 py-2.5 max-w-2xl shadow-lg">
               <span className="text-amber-400 font-extrabold text-base mr-2 uppercase tracking-wider">
-                Pertanyaan {activeClue.number} {activeClue.direction === "across" ? "Mendatar" : "Menurun"}:
+                Pertanyaan {activeClue.number}{" "}
+                {activeClue.direction === "across" ? "Mendatar" : "Menurun"}:
               </span>
               <p className="text-white text-base font-semibold leading-relaxed mt-1">
                 {activeClue.text}
@@ -129,17 +134,18 @@ export function Babak3View() {
           initialSeconds={state.timerRemaining}
           isRunning={state.isTimerRunning}
           onTimeout={() => {
-            updateState((prev) => ({ ...prev, isTimerRunning: false, timerRemaining: 0 }));
+            updateState((prev) => ({
+              ...prev,
+              isTimerRunning: false,
+              timerRemaining: 0,
+            }));
           }}
           size="md"
         />
       </div>
 
       <div className="flex-1 flex items-center justify-center overflow-auto py-4">
-        <CrosswordGrid
-          grid={state.crossword.grid}
-          activeClue={activeClue}
-        />
+        <CrosswordGrid grid={state.crossword.grid} activeClue={activeClue} />
       </div>
     </div>
   );
@@ -214,7 +220,9 @@ function CrosswordGrid({
               <span
                 className={cn(
                   "text-lg font-black transition-all duration-300",
-                  cell.revealed ? "opacity-100 scale-100" : "opacity-0 scale-75",
+                  cell.revealed
+                    ? "opacity-100 scale-100"
+                    : "opacity-0 scale-75",
                 )}
               >
                 {cell.letter}

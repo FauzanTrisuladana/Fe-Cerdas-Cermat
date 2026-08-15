@@ -16,15 +16,20 @@ function ProyektorSkor() {
       {/* DEV nav */}
       {import.meta.env.DEV && (
         <div className="flex items-center gap-2 text-xs text-white/30 flex-shrink-0">
-          <Link to="/proyektor" className="hover:text-white/60 transition-colors flex items-center gap-1">
+          <Link
+            to="/proyektor"
+            className="hover:text-white/60 transition-colors flex items-center gap-1"
+          >
             <Home className="w-3 h-3" />
             Judul
           </Link>
           {[1, 2, 3, 4].map((b) => (
-            <Link key={b} to={("/proyektor/babak/" + b) as any}
-              className="hover:text-white/60 transition-colors flex items-center gap-1">
-              <Monitor className="w-3 h-3" />
-              B{b}
+            <Link
+              key={b}
+              to={("/proyektor/babak/" + b) as any}
+              className="hover:text-white/60 transition-colors flex items-center gap-1"
+            >
+              <Monitor className="w-3 h-3" />B{b}
             </Link>
           ))}
         </div>

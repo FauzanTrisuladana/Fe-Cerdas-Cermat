@@ -15,10 +15,20 @@ export function SoundController({ onTriggerSound }: SoundControllerProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="grid grid-cols-2 gap-2">
-        <Button size="sm" variant="outline" onClick={() => onTriggerSound("correct")} className="border-emerald-200 text-emerald-600">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => onTriggerSound("correct")}
+          className="border-emerald-200 text-emerald-600"
+        >
           Benar (Tung)
         </Button>
-        <Button size="sm" variant="outline" onClick={() => onTriggerSound("wrong")} className="border-rose-200 text-rose-600">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => onTriggerSound("wrong")}
+          className="border-rose-200 text-rose-600"
+        >
           Salah (Tot)
         </Button>
       </CardContent>

@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useGameState } from "@/hooks/use-game-state";
-import { Button } from "@/components/ui/button";
 import { ScoreTable } from "@/components/skor/score-table";
 import { ScoreSummary } from "@/components/skor/score-summary";
+import HeaderComp from "@/components/shared/header-comp";
 import type { ScoreChange } from "@/components/proyektor/types";
 
 export const Route = createFileRoute("/admin/_auth/skor")({
@@ -54,7 +54,7 @@ function AdminSkorPage() {
 
   const handleApplyManualScore = (teamId: string) => {
     const value = tempScores[teamId];
-    if (value === undefined) return;
+    if (!value && value !== 0) return;
 
     updateState((prev) => {
       const nextTeams = prev.teams.map((team) => {
@@ -72,7 +72,10 @@ function AdminSkorPage() {
       });
 
       const team = prev.teams.find((t) => t.id === teamId);
-      const delta = team ? value - team.scores[`babak${selectedRound}` as keyof typeof team.scores] : 0;
+      const delta = team
+        ? value -
+          team.scores[`babak${selectedRound}` as keyof typeof team.scores]
+        : 0;
 
       const change: ScoreChange = {
         teamId,
@@ -89,31 +92,11 @@ function AdminSkorPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight">Pengelolaan Skor</h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            Atur perolehan nilai tim kuis cerdas cermat secara real-time.
-          </p>
-        </div>
-        <Button
-          variant="outline"
-          onClick={() => {
-            updateState((prev) => ({
-              ...prev,
-              teams: prev.teams.map((t) => ({
-                ...t,
-                scores: { babak1: 0, babak2: 0, babak3: 0, babak4: 0 },
-              })),
-              lastScoreChange: null,
-            }));
-          }}
-          className="text-destructive border-destructive/20 hover:bg-destructive/10"
-        >
-          Reset Skor Semua Tim
-        </Button>
-      </div>
+    <>
+      <HeaderComp
+        title="Pengelolaan Skor"
+        description="Atur perolehan nilai tim kuis cerdas cermat secara real-time."
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Panel Penyesuaian Skor */}
@@ -130,6 +113,6 @@ function AdminSkorPage() {
         {/* Ringkasan Skor Total */}
         <ScoreSummary state={state} />
       </div>
-    </div>
+    </>
   );
 }
