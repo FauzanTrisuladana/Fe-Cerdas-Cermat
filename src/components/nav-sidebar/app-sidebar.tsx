@@ -56,7 +56,7 @@ export function AppSidebar({
     queryClient.removeQueries({
       queryKey: ["profile"],
     });
-    router.navigate({ to: "/login", replace: true });
+    router.navigate({ to: "/admin/login", replace: true });
   };
 
   return (
@@ -135,7 +135,7 @@ export function AppSidebar({
               size="lg"
               className="group-data-[collapsible=icon]:p-1! hover:bg-slate-100"
             >
-              <Link to="/admin/dashboard">
+              <div>
                 <div className="flex h-10 w-10 items-center justify-center rounded-full border">
                   <Avatar className="h-full w-full">
                     <AvatarImage
@@ -167,7 +167,7 @@ export function AppSidebar({
                     <div className="h-3 w-32 rounded bg-slate-200 animate-pulse mt-1" />
                   )}
                 </div>
-              </Link>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
 

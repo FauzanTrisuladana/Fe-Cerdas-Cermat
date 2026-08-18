@@ -17,6 +17,8 @@ export const env = createEnv({
     VITE_API_URL: z.string().url(),
     VITE_ENV: z.enum(["development", "production"]),
     VITE_GOOGLE_CLIENT_ID: z.string().min(1, "Google Client ID is required"),
+    VITE_PUSHER_APP_KEY: z.string().min(1, "Pusher Key is required"),
+    VITE_PUSHER_APP_CLUSTER: z.string().min(1, "Pusher Cluster is required"),
   },
 
   /**

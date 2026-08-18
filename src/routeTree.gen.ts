@@ -14,7 +14,6 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminAuthRouteImport } from './routes/admin/_auth'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as ProyektorProyektorRouteImport } from './routes/proyektor/_proyektor'
-import { Route as AdminAuthDashboardRouteImport } from './routes/admin/_auth/dashboard'
 import { Route as AdminAuthSkorRouteImport } from './routes/admin/_auth/skor'
 import { Route as AdminAuthSoalBabakRouteImport } from './routes/admin/_auth/soal-babak'
 import { Route as AdminAuthUsersRouteImport } from './routes/admin/_auth/users'
@@ -50,11 +49,6 @@ const ProyektorProyektorRoute = ProyektorProyektorRouteImport.update({
   id: '/proyektor/_proyektor',
   path: '/proyektor',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AdminAuthDashboardRoute = AdminAuthDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AdminAuthRoute,
 } as any)
 const AdminAuthSkorRoute = AdminAuthSkorRouteImport.update({
   id: '/skor',
@@ -117,7 +111,6 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/proyektor': typeof ProyektorProyektorRouteWithChildren
   '/admin/': typeof AdminIndexRoute
-  '/admin/dashboard': typeof AdminAuthDashboardRoute
   '/admin/skor': typeof AdminAuthSkorRoute
   '/admin/soal-babak': typeof AdminAuthSoalBabakRoute
   '/admin/users': typeof AdminAuthUsersRoute
@@ -133,7 +126,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminIndexRoute
   '/admin/login': typeof AdminLoginRoute
-  '/admin/dashboard': typeof AdminAuthDashboardRoute
   '/admin/skor': typeof AdminAuthSkorRoute
   '/admin/soal-babak': typeof AdminAuthSoalBabakRoute
   '/admin/users': typeof AdminAuthUsersRoute
@@ -152,7 +144,6 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/proyektor/_proyektor': typeof ProyektorProyektorRouteWithChildren
   '/admin/': typeof AdminIndexRoute
-  '/admin/_auth/dashboard': typeof AdminAuthDashboardRoute
   '/admin/_auth/skor': typeof AdminAuthSkorRoute
   '/admin/_auth/soal-babak': typeof AdminAuthSoalBabakRoute
   '/admin/_auth/users': typeof AdminAuthUsersRoute
@@ -172,7 +163,6 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/proyektor'
     | '/admin/'
-    | '/admin/dashboard'
     | '/admin/skor'
     | '/admin/soal-babak'
     | '/admin/users'
@@ -188,7 +178,6 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/admin/login'
-    | '/admin/dashboard'
     | '/admin/skor'
     | '/admin/soal-babak'
     | '/admin/users'
@@ -206,7 +195,6 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/proyektor/_proyektor'
     | '/admin/'
-    | '/admin/_auth/dashboard'
     | '/admin/_auth/skor'
     | '/admin/_auth/soal-babak'
     | '/admin/_auth/users'
@@ -263,13 +251,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/proyektor'
       preLoaderRoute: typeof ProyektorProyektorRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/admin/_auth/dashboard': {
-      id: '/admin/_auth/dashboard'
-      path: '/dashboard'
-      fullPath: '/admin/dashboard'
-      preLoaderRoute: typeof AdminAuthDashboardRouteImport
-      parentRoute: typeof AdminAuthRoute
     }
     '/admin/_auth/skor': {
       id: '/admin/_auth/skor'
@@ -345,7 +326,6 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminAuthRouteChildren {
-  AdminAuthDashboardRoute: typeof AdminAuthDashboardRoute
   AdminAuthSkorRoute: typeof AdminAuthSkorRoute
   AdminAuthSoalBabakRoute: typeof AdminAuthSoalBabakRoute
   AdminAuthUsersRoute: typeof AdminAuthUsersRoute
@@ -353,7 +333,6 @@ interface AdminAuthRouteChildren {
 }
 
 const AdminAuthRouteChildren: AdminAuthRouteChildren = {
-  AdminAuthDashboardRoute: AdminAuthDashboardRoute,
   AdminAuthSkorRoute: AdminAuthSkorRoute,
   AdminAuthSoalBabakRoute: AdminAuthSoalBabakRoute,
   AdminAuthUsersRoute: AdminAuthUsersRoute,
