@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy } from "lucide-react";
 import type { GameStateData } from "@/hooks/use-game-state";
-import { getTotalScore } from "@/components/proyektor/dummy-data";
+import { getTotalScore } from "@/components/proyektor/team-utils";
 
 interface ScoreSummaryProps {
   state: GameStateData;

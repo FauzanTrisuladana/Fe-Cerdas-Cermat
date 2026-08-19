@@ -37,7 +37,7 @@ export function UserNav() {
     try {
       await logoutfn();
       toast.success("Logout berhasil!");
-      router.navigate({ to: "/login", replace: true });
+      router.navigate({ to: "/admin/login", replace: true });
     } catch (err: any) {
       const msg =
         err?.response?.data?.message ||

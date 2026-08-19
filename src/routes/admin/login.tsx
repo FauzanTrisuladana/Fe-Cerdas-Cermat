@@ -12,7 +12,7 @@ function RouteComponent() {
 
   useEffect(() => {
     if (isAuthenticated()) {
-      router.navigate({ to: "/admin/dashboard", replace: true });
+      router.navigate({ to: "/admin", replace: true });
     }
   }, [router]);
 

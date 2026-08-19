@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import type { Team, ScoreChange } from "./types";
-import { TEAM_COLOR_MAP, getTotalScore } from "./dummy-data";
+import { TEAM_COLOR_MAP, getTotalScore } from "./team-utils";
 
 interface TimScoreCardProps {
   team: Team;

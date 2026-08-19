@@ -15,13 +15,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { GameStateData } from "@/hooks/use-game-state";
+import { getTotalScore } from "@/components/proyektor/team-utils";
 
 interface ScoreTableProps {
   state: GameStateData;
-  selectedRound: number;
-  onRoundChange: (round: number) => void;
   tempScores: Record<string, number>;
   onScoreChange: (teamId: string, delta: number) => void;
   onManualSetScore: (teamId: string, valueStr: string) => void;
@@ -30,98 +28,90 @@ interface ScoreTableProps {
 
 export function ScoreTable({
   state,
-  selectedRound,
-  onRoundChange,
   tempScores,
   onScoreChange,
   onManualSetScore,
   onApplyManualScore,
 }: ScoreTableProps) {
-  const scoreKeys: Record<number, "babak1" | "babak2" | "babak3" | "babak4"> = {
-    1: "babak1",
-    2: "babak2",
-    3: "babak3",
-    4: "babak4",
-  };
-
   return (
     <Card className="lg:col-span-2">
       <CardHeader>
-        <CardTitle>Daftar Tim — Babak {selectedRound}</CardTitle>
+        <CardTitle>Daftar Tim — Semua Babak</CardTitle>
         <CardDescription>
-          Tambah/kurang skor atau input secara langsung untuk masing-masing tim.
+          Atur perolehan nilai tim kuis cerdas cermat untuk setiap babak.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs
-          value={String(selectedRound)}
-          onValueChange={(val) => onRoundChange(Number(val))}
-          className="w-full"
-        >
-          <TabsList className="grid grid-cols-4 w-full max-w-xl mb-6">
-            <TabsTrigger value="1">Babak 1</TabsTrigger>
-            <TabsTrigger value="2">Babak 2</TabsTrigger>
-            <TabsTrigger value="3">Babak 3</TabsTrigger>
-            <TabsTrigger value="4">Babak 4</TabsTrigger>
-          </TabsList>
-        </Tabs>
-
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Nama Tim</TableHead>
-              <TableHead className="text-center">Skor Saat Ini</TableHead>
+              <TableHead className="text-center">Total</TableHead>
               <TableHead className="text-center">Penyesuaian Cepat</TableHead>
-              <TableHead className="text-right">Input Manual</TableHead>
+              <TableHead className="text-right">Input Delta</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {state.teams.map((team) => {
-              const currentScore = team.scores[scoreKeys[selectedRound]];
-              const inputValue =
-                team.id in tempScores ? tempScores[team.id] : currentScore;
+              const total = getTotalScore(team);
 
               return (
                 <TableRow key={team.id}>
                   <TableCell className="font-extrabold text-lg">
                     {team.name}
                   </TableCell>
-                  <TableCell className="text-center font-black text-2xl text-primary">
-                    {currentScore}
+                  <TableCell className="text-center font-black text-xl text-primary">
+                    {total}
                   </TableCell>
                   <TableCell>
-                    <div className="flex gap-2 justify-center">
+                    <div className="flex gap-1 justify-center">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onScoreChange(team.id, -100)}
+                        className="h-8 w-12 border-rose-200 text-rose-600 hover:bg-rose-50"
+                      >
+                        -100
+                      </Button>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => onScoreChange(team.id, -50)}
-                        className="h-8 w-12 border-rose-200 text-rose-600 hover:bg-rose-50"
+                        className="h-8 w-12 border-rose-100 text-rose-500 hover:bg-rose-50"
                       >
                         -50
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => onScoreChange(team.id, -10)}
-                        className="h-8 w-12 border-rose-100 text-rose-500 hover:bg-rose-50"
-                      >
-                        -10
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => onScoreChange(team.id, 10)}
+                        onClick={() => onScoreChange(team.id, 100)}
                         className="h-8 w-12 border-emerald-100 text-emerald-500 hover:bg-emerald-50"
                       >
-                        +10
+                        +100
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => onScoreChange(team.id, 50)}
+                        onClick={() => onScoreChange(team.id, 150)}
                         className="h-8 w-12 border-emerald-200 text-emerald-600 hover:bg-emerald-50"
                       >
-                        +50
+                        +150
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onScoreChange(team.id, 200)}
+                        className="h-8 w-12 border-emerald-200 text-emerald-600 hover:bg-emerald-50"
+                      >
+                        +200
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onScoreChange(team.id, 300)}
+                        className="h-8 w-12 border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                      >
+                        +300
                       </Button>
                     </div>
                   </TableCell>
@@ -130,7 +120,8 @@ export function ScoreTable({
                       <Input
                         type="number"
                         className="w-20 text-center font-bold"
-                        value={inputValue}
+                        placeholder="±0"
+                        value={team.id in tempScores ? tempScores[team.id] : ""}
                         onChange={(e) =>
                           onManualSetScore(team.id, e.target.value)
                         }

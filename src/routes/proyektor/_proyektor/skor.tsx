@@ -1,15 +1,89 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect } from "react";
 import { Home, Monitor } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useGameState } from "@/hooks/use-game-state";
+import { useScoreWebSocket } from "@/hooks/use-score-websocket";
 import { SkorTable } from "@/components/proyektor/skor-table";
+import {
+  getScoreDetail
+  
+} from "@/services/scoreService";
+import type {ScoreEntry} from "@/services/scoreService";
 
 export const Route = createFileRoute("/proyektor/_proyektor/skor")({
   component: ProyektorSkor,
 });
 
 function ProyektorSkor() {
-  // Babak yang sudah dilaksanakan (untuk demo bisa di-toggle)
-  const [completedRounds] = useState<number[]>([1, 2, 3]);
+  const { updateState } = useGameState();
+
+  // ─── WebSocket: Listen for real-time score updates ─────────────────────────
+  useScoreWebSocket();
+
+  // ─── API: Fetch score detail ───────────────────────────────────────────────
+  const getScoreDetailFn = useServerFn(getScoreDetail);
+
+  const { data: detailData } = useQuery({
+    queryKey: ["score-detail"],
+    queryFn: async () => {
+      const response = await getScoreDetailFn();
+      return response;
+    },
+    staleTime: 1000 * 60 * 2,
+  });
+
+  // ─── Sync API data ke game state ───────────────────────────────────────────
+  useEffect(() => {
+    if (!detailData) return;
+
+    const { data: entries } = detailData;
+
+    // Build per-team per-babak scores from detail entries
+    const teamScores: Record<string, Record<number, number>> = {};
+    entries.forEach((entry: ScoreEntry) => {
+      const team = entry.team;
+      const babak = parseInt(entry.babak);
+      if (!teamScores[team]) {
+        teamScores[team] = {};
+      }
+      teamScores[team][babak] =
+        (teamScores[team][babak] || 0) + entry.value;
+    });
+
+    // Update game state teams with API scores
+    updateState((prev) => {
+      const nextTeams = prev.teams.map((team, idx) => {
+        const teamNum = idx + 1;
+        const scores = teamScores[String(teamNum)] || {};
+        return {
+          ...team,
+          scores: {
+            babak1: scores[1] || 0,
+            babak2: scores[2] || 0,
+            babak3: scores[3] || 0,
+            babak4: scores[4] || 0,
+          },
+        };
+      });
+
+      return {
+        ...prev,
+        teams: nextTeams,
+      };
+    });
+  }, [detailData, updateState]);
+
+  // ─── Determine completed rounds from API data ──────────────────────────────
+  // Babak yang sudah dilaksanakan = babak yang ada di data detail
+  const completedRounds = detailData
+    ? Array.from(
+        new Set(
+          detailData.data.map((entry: ScoreEntry) => parseInt(entry.babak)),
+        ),
+      ).sort((a, b) => a - b)
+    : [1, 2, 3];
 
   return (
     <div className="flex flex-col flex-1 gap-6 min-h-0">
@@ -49,7 +123,10 @@ function ProyektorSkor() {
       {/* Tabel skor */}
       <div className="flex-1 flex items-start justify-center overflow-y-auto">
         <div className="w-full max-w-4xl">
-          <SkorTable completedRounds={completedRounds} />
+          <SkorTable
+            completedRounds={completedRounds}
+            detailData={detailData}
+          />
         </div>
       </div>
 

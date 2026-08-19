@@ -4,7 +4,12 @@ import { cn } from "@/lib/utils";
 import { TimScoreCard } from "./tim-score-card";
 import { TimerDisplay } from "./timer-display";
 import { useGameState } from "@/hooks/use-game-state";
+import { useScoreWebSocket } from "@/hooks/use-score-websocket";
 import type { CrosswordCell, CrosswordClue } from "./types";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getScoreDetail  } from "@/services/scoreService";
+import type {ScoreEntry} from "@/services/scoreService";
 
 function playSound(type: "correct" | "wrong" | "countdown" | "timesup") {
   const audioMap: Record<string, string> = {
@@ -24,6 +29,62 @@ export function Babak3View() {
   const { state, updateState } = useGameState();
   const lastScoreChangeRef = useRef(state.lastScoreChange);
   const soundTimestampRef = useRef(state.soundTrigger.timestamp);
+
+  // ─── WebSocket: Listen for real-time score updates ─────────────────────────
+  useScoreWebSocket();
+
+  // ─── API: Fetch score detail for sync ──────────────────────────────────────
+  const getScoreDetailFn = useServerFn(getScoreDetail);
+
+  const { data: detailData } = useQuery({
+    queryKey: ["score-detail"],
+    queryFn: async () => {
+      const response = await getScoreDetailFn();
+      return response;
+    },
+    staleTime: 1000 * 60 * 2,
+  });
+
+  // ─── Sync API data ke game state ───────────────────────────────────────────
+  useEffect(() => {
+    if (!detailData) return;
+
+    const { data: entries } = detailData;
+
+    // Build per-team per-babak scores from detail entries
+    const teamScores: Record<string, Record<number, number>> = {};
+    entries.forEach((entry: ScoreEntry) => {
+      const team = entry.team;
+      const babak = parseInt(entry.babak);
+      if (!teamScores[team]) {
+        teamScores[team] = {};
+      }
+      teamScores[team][babak] =
+        (teamScores[team][babak] || 0) + entry.value;
+    });
+
+    // Update game state teams with API scores
+    updateState((prev) => {
+      const nextTeams = prev.teams.map((team, idx) => {
+        const teamNum = idx + 1;
+        const scores = teamScores[String(teamNum)] || {};
+        return {
+          ...team,
+          scores: {
+            babak1: scores[1] || 0,
+            babak2: scores[2] || 0,
+            babak3: scores[3] || 0,
+            babak4: scores[4] || 0,
+          },
+        };
+      });
+
+      return {
+        ...prev,
+        teams: nextTeams,
+      };
+    });
+  }, [detailData, updateState]);
 
   // Trigger sound effect
   useEffect(() => {
