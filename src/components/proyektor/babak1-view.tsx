@@ -1,5 +1,4 @@
-import { useEffect, useRef } from "react";
-import { toast } from "sonner";
+import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { TimScoreCard } from "./tim-score-card";
 import { TimerDisplay } from "./timer-display";
@@ -16,7 +15,6 @@ interface Babak14ViewProps {
 
 export function Babak14View({ babakNumber }: Babak14ViewProps) {
   const { state, updateState } = useGameState();
-  const lastScoreChangeRef = useRef(state.lastScoreChange);
 
   // ─── WebSocket: Listen for real-time score updates ─────────────────────────
   useScoreWebSocket();
@@ -72,29 +70,6 @@ export function Babak14View({ babakNumber }: Babak14ViewProps) {
       };
     });
   }, [detailData, updateState]);
-
-  // Trigger center toast on score update
-  useEffect(() => {
-    const change = state.lastScoreChange;
-    if (change && change !== lastScoreChangeRef.current) {
-      lastScoreChangeRef.current = change;
-      const team = state.teams.find((t) => t.id === change.teamId);
-      if (team) {
-        const verb = change.delta > 0 ? "Menambahkan" : "Mengurangkan";
-        const absDelta = Math.abs(change.delta);
-        toast(`${verb} ${absDelta} poin ke ${team.name}`, {
-          position: "top-center",
-          duration: 4000,
-          className: cn(
-            "text-center font-bold text-lg border-2",
-            change.delta > 0
-              ? "bg-emerald-900/95 border-emerald-500 text-emerald-300"
-              : "bg-rose-900/95 border-rose-500 text-rose-300",
-          ),
-        });
-      }
-    }
-  }, [state.lastScoreChange, state.teams]);
 
   const babakName =
     babakNumber === 1 ? "Babak 1 — Paket Soal" : "Babak 4 — Soal Rebutan";

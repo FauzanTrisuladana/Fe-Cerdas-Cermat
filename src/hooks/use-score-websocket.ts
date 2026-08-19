@@ -31,7 +31,11 @@ export function useScoreWebSocket() {
       // Tampilkan toaster notifikasi
       const verb = delta > 0 ? "Menambahkan" : "Mengurangkan";
       const absDelta = Math.abs(delta);
-      toast.success(`${verb} ${absDelta} poin ke ${teamName}`);
+      if (delta > 0) {
+        toast.success(`${verb} ${absDelta} poin ke ${teamName}`);
+      } else if (delta < 0) {
+        toast.error(`${verb} ${absDelta} poin dari ${teamName}`);
+      }
 
       // Update game state secara real-time
       updateState((prev) => {

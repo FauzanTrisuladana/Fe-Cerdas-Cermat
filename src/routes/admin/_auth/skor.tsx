@@ -138,9 +138,6 @@ function AdminSkorPage() {
       // Invalidate queries
       queryClient.invalidateQueries({ queryKey: ["score-detail"] });
       queryClient.invalidateQueries({ queryKey: ["score-summary"] });
-      toast.success(
-        `Skor ${teamId} diperbarui: ${value > 0 ? "+" : ""}${value}`,
-      );
       setTempScores({});
     } catch (error: any) {
       const msg =
@@ -201,7 +198,6 @@ function AdminSkorPage() {
 
       queryClient.invalidateQueries({ queryKey: ["score-detail"] });
       queryClient.invalidateQueries({ queryKey: ["score-summary"] });
-      toast.success(`Skor ${teamId} diubah: ${delta > 0 ? "+" : ""}${delta}`);
       setTempScores({});
     } catch (error: any) {
       const msg =

@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { TimScoreCard } from "./tim-score-card";
 import { TimerDisplay } from "./timer-display";
@@ -27,7 +26,6 @@ function playSound(type: "correct" | "wrong" | "countdown" | "timesup") {
 
 export function Babak3View() {
   const { state, updateState } = useGameState();
-  const lastScoreChangeRef = useRef(state.lastScoreChange);
   const soundTimestampRef = useRef(state.soundTrigger.timestamp);
 
   // ─── WebSocket: Listen for real-time score updates ─────────────────────────
@@ -93,29 +91,6 @@ export function Babak3View() {
       playSound(trigger.type);
     }
   }, [state.soundTrigger]);
-
-  // Trigger center toast on score update
-  useEffect(() => {
-    const change = state.lastScoreChange;
-    if (change && change !== lastScoreChangeRef.current) {
-      lastScoreChangeRef.current = change;
-      const team = state.teams.find((t) => t.id === change.teamId);
-      if (team) {
-        const verb = change.delta > 0 ? "Menambahkan" : "Mengurangkan";
-        const absDelta = Math.abs(change.delta);
-        toast(`${verb} ${absDelta} poin ke ${team.name}`, {
-          position: "top-center",
-          duration: 4000,
-          className: cn(
-            "text-center font-bold text-lg border-2",
-            change.delta > 0
-              ? "bg-emerald-900/95 border-emerald-500 text-emerald-300"
-              : "bg-rose-900/95 border-rose-500 text-rose-300",
-          ),
-        });
-      }
-    }
-  }, [state.lastScoreChange, state.teams]);
 
   // Find active clue
   const activeClue =
