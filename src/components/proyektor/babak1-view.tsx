@@ -7,8 +7,8 @@ import { useGameState } from "@/hooks/use-game-state";
 import { useScoreWebSocket } from "@/hooks/use-score-websocket";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getScoreDetail  } from "@/services/scoreService";
-import type {ScoreEntry} from "@/services/scoreService";
+import { getScoreDetail } from "@/services/scoreService";
+import type { ScoreEntry } from "@/services/scoreService";
 
 interface Babak14ViewProps {
   babakNumber: 1 | 4;
@@ -47,8 +47,7 @@ export function Babak14View({ babakNumber }: Babak14ViewProps) {
       if (!teamScores[team]) {
         teamScores[team] = {};
       }
-      teamScores[team][babak] =
-        (teamScores[team][babak] || 0) + entry.value;
+      teamScores[team][babak] = (teamScores[team][babak] || 0) + entry.value;
     });
 
     // Update game state teams with API scores

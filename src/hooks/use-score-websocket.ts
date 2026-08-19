@@ -23,7 +23,6 @@ export function useScoreWebSocket() {
     const channel = echo.channel("score");
 
     channel.listen(".score.col.activity", (data: ScoreEntry) => {
-
       console.log(data);
       const teamNum = parseInt(data.team);
       const teamName = `RT ${String(teamNum).padStart(2, "0")}`;
@@ -37,7 +36,8 @@ export function useScoreWebSocket() {
       // Update game state secara real-time
       updateState((prev) => {
         const babak = parseInt(data.babak);
-        const roundKey = `babak${babak}` as "babak1" | "babak2" | "babak3" | "babak4";
+        const roundKey = `babak${babak}` as
+          "babak1" | "babak2" | "babak3" | "babak4";
 
         const nextTeams = prev.teams.map((team, idx) => {
           if (idx + 1 === teamNum) {

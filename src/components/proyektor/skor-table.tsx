@@ -185,10 +185,7 @@ export function SkorTable({
               );
             })}
             <td className="px-6 py-3 text-center text-lg font-bold text-white/50 tabular-nums">
-              {Object.values(summaryTotals).reduce(
-                (sum, val) => sum + val,
-                0,
-              )}
+              {Object.values(summaryTotals).reduce((sum, val) => sum + val, 0)}
             </td>
           </tr>
         </tfoot>

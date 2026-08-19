@@ -12,11 +12,9 @@ import type { ScoreChange } from "@/components/proyektor/types";
 import {
   getScoreDetail,
   getScoreSummary,
-  storeScore
-  
-  
+  storeScore,
 } from "@/services/scoreService";
-import type {ScoreEntry, ScoreSummaryEntry} from "@/services/scoreService";
+import type { ScoreEntry, ScoreSummaryEntry } from "@/services/scoreService";
 
 export const Route = createFileRoute("/admin/_auth/skor")({
   component: AdminSkorPage,
@@ -67,8 +65,7 @@ function AdminSkorPage() {
       if (!teamScores[team]) {
         teamScores[team] = {};
       }
-      teamScores[team][babak] =
-        (teamScores[team][babak] || 0) + entry.value;
+      teamScores[team][babak] = (teamScores[team][babak] || 0) + entry.value;
     });
 
     // Update game state teams with API scores
@@ -99,7 +96,8 @@ function AdminSkorPage() {
   const handleScoreChange = async (teamId: string, delta: number) => {
     const teamIdx = state.teams.findIndex((t) => t.id === teamId);
     const teamNum = teamIdx + 1;
-    const roundKey = `babak${state.activeRound}` as "babak1" | "babak2" | "babak3" | "babak4";
+    const roundKey = `babak${state.activeRound}` as
+      "babak1" | "babak2" | "babak3" | "babak4";
     const currentScore = state.teams[teamIdx]?.scores[roundKey] || 0;
     const newScore = Math.max(0, currentScore + delta);
     const value = newScore - currentScore;
@@ -140,7 +138,9 @@ function AdminSkorPage() {
       // Invalidate queries
       queryClient.invalidateQueries({ queryKey: ["score-detail"] });
       queryClient.invalidateQueries({ queryKey: ["score-summary"] });
-      toast.success(`Skor ${teamId} diperbarui: ${value > 0 ? "+" : ""}${value}`);
+      toast.success(
+        `Skor ${teamId} diperbarui: ${value > 0 ? "+" : ""}${value}`,
+      );
       setTempScores({});
     } catch (error: any) {
       const msg =
@@ -162,7 +162,8 @@ function AdminSkorPage() {
 
     const teamIdx = state.teams.findIndex((t) => t.id === teamId);
     const teamNum = teamIdx + 1;
-    const roundKey = `babak${state.activeRound}` as "babak1" | "babak2" | "babak3" | "babak4";
+    const roundKey = `babak${state.activeRound}` as
+      "babak1" | "babak2" | "babak3" | "babak4";
     const currentScore = state.teams[teamIdx]?.scores[roundKey] || 0;
     const newScore = Math.max(0, currentScore + delta);
 

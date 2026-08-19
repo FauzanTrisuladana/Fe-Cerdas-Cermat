@@ -6,11 +6,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { useGameState } from "@/hooks/use-game-state";
 import { useScoreWebSocket } from "@/hooks/use-score-websocket";
 import { SkorTable } from "@/components/proyektor/skor-table";
-import {
-  getScoreDetail
-  
-} from "@/services/scoreService";
-import type {ScoreEntry} from "@/services/scoreService";
+import { getScoreDetail } from "@/services/scoreService";
+import type { ScoreEntry } from "@/services/scoreService";
 
 export const Route = createFileRoute("/proyektor/_proyektor/skor")({
   component: ProyektorSkor,
@@ -48,8 +45,7 @@ function ProyektorSkor() {
       if (!teamScores[team]) {
         teamScores[team] = {};
       }
-      teamScores[team][babak] =
-        (teamScores[team][babak] || 0) + entry.value;
+      teamScores[team][babak] = (teamScores[team][babak] || 0) + entry.value;
     });
 
     // Update game state teams with API scores

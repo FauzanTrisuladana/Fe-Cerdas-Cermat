@@ -8,8 +8,8 @@ import { useScoreWebSocket } from "@/hooks/use-score-websocket";
 import type { CrosswordCell, CrosswordClue } from "./types";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getScoreDetail  } from "@/services/scoreService";
-import type {ScoreEntry} from "@/services/scoreService";
+import { getScoreDetail } from "@/services/scoreService";
+import type { ScoreEntry } from "@/services/scoreService";
 
 function playSound(type: "correct" | "wrong" | "countdown" | "timesup") {
   const audioMap: Record<string, string> = {
@@ -59,8 +59,7 @@ export function Babak3View() {
       if (!teamScores[team]) {
         teamScores[team] = {};
       }
-      teamScores[team][babak] =
-        (teamScores[team][babak] || 0) + entry.value;
+      teamScores[team][babak] = (teamScores[team][babak] || 0) + entry.value;
     });
 
     // Update game state teams with API scores
