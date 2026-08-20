@@ -1,5 +1,4 @@
 import { useGameState } from "@/hooks/use-game-state";
-import { getTotalScore } from "./team-utils";
 import { cn } from "@/lib/utils";
 import type {
   ScoreEntry,
@@ -8,20 +7,13 @@ import type {
 } from "@/services/scoreService";
 
 interface SkorTableProps {
-  completedRounds?: number[]; // babak yang sudah selesai, misal [1, 2, 3]
+  completedRounds?: number[];
   detailData?: {
     data: ScoreEntry[];
     score_each_babak: ScoreEachBabakEntry[];
     score_summary: ScoreSummaryEntry[];
   };
 }
-
-const BABAK_LABELS: Record<number, string> = {
-  1: "Babak 1",
-  2: "Babak 2",
-  3: "Babak 3",
-  4: "Babak 4",
-};
 
 const TEAM_HEADER_COLORS: Record<string, string> = {
   blue: "text-blue-400",
@@ -31,164 +23,167 @@ const TEAM_HEADER_COLORS: Record<string, string> = {
   purple: "text-violet-400",
 };
 
-const TEAM_ROW_COLORS: Record<string, string> = {
-  blue: "bg-blue-950/40",
-  green: "bg-emerald-950/40",
-  yellow: "bg-amber-950/40",
-  red: "bg-rose-950/40",
-  purple: "bg-violet-950/40",
-};
-
 export function SkorTable({
-  completedRounds = [1, 2, 3],
+  completedRounds = [],
   detailData,
 }: SkorTableProps) {
   const { state } = useGameState();
+  const teams = state.teams;
 
-  // ─── Build per-babak totals from API data ──────────────────────────────────
-  // score_each_babak: [{ babak, team, total }]
-  const babakTotals: Record<number, Record<string, number>> = {};
-  detailData?.score_each_babak.forEach((entry) => {
+  if (!detailData || completedRounds.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-20 text-white/30 text-lg font-semibold tracking-wide">
+        Memuat data skor…
+      </div>
+    );
+  }
+
+  // ── Group individual entries by babak → team → [values] ──────────────────
+  const entriesByBabak: Record<number, Record<string, number[]>> = {};
+  detailData.data.forEach((entry) => {
     const babak = parseInt(entry.babak);
-    if (!babakTotals[babak]) {
-      babakTotals[babak] = {};
-    }
+    if (!entriesByBabak[babak]) entriesByBabak[babak] = {};
+    if (!entriesByBabak[babak][entry.team])
+      entriesByBabak[babak][entry.team] = [];
+    entriesByBabak[babak][entry.team].push(entry.value);
+  });
+
+  // ── Per-babak totals (score_each_babak) ──────────────────────────────────
+  const babakTotals: Record<number, Record<string, number>> = {};
+  detailData.score_each_babak.forEach((entry) => {
+    const babak = parseInt(entry.babak);
+    if (!babakTotals[babak]) babakTotals[babak] = {};
     babakTotals[babak][entry.team] = parseInt(entry.total);
   });
 
-  // ─── Build summary totals from API data ────────────────────────────────────
-  // score_summary: [{ team, total }]
+  // ── Grand total (score_summary) ───────────────────────────────────────────
   const summaryTotals: Record<string, number> = {};
-  detailData?.score_summary.forEach((entry) => {
+  detailData.score_summary.forEach((entry) => {
     summaryTotals[entry.team] = parseInt(entry.total);
   });
 
-  // ─── Build per-team per-babak individual entries from detail data ──────────
-  // data: [{ babak, team, value }]
-  // For babak 1, we merge all entries for each team into one row
-  const babak1Entries: Record<string, number> = {};
-  detailData?.data.forEach((entry) => {
-    if (parseInt(entry.babak) === 1) {
-      babak1Entries[entry.team] =
-        (babak1Entries[entry.team] || 0) + entry.value;
-    }
-  });
+  const rounds = [...completedRounds].sort((a, b) => a - b);
 
   return (
-    <div className="w-full overflow-x-auto rounded-2xl border border-white/10 shadow-2xl bg-slate-900/40 backdrop-blur-md">
+    <div className="w-full overflow-x-auto scrollbar-hide rounded-2xl border border-white/10 shadow-2xl bg-slate-900/40 backdrop-blur-md">
       <table className="w-full text-white border-collapse">
         <thead>
-          <tr className="border-b border-white/10 bg-white/5">
-            <th className="text-left px-6 py-4 text-white/60 font-bold text-sm uppercase tracking-widest">
-              Tim
+          <tr className="border-b-2 border-white/10 bg-white/5">
+            <th className="text-left px-5 py-4 text-white/50 font-bold text-xs uppercase tracking-widest w-28">
+              Babak
             </th>
-            {completedRounds.map((round) => (
+            {teams.map((team) => (
               <th
-                key={round}
-                className="px-6 py-4 text-center text-white/60 font-bold text-sm uppercase tracking-widest"
+                key={team.id}
+                className={cn(
+                  "px-5 py-4 text-center font-black text-sm uppercase tracking-widest",
+                  TEAM_HEADER_COLORS[team.color],
+                )}
               >
-                {BABAK_LABELS[round]}
+                {team.name}
               </th>
             ))}
-            <th className="px-6 py-4 text-center text-white font-black text-sm uppercase tracking-widest">
-              Total
-            </th>
           </tr>
         </thead>
 
         <tbody>
-          {state.teams.map((team, idx) => {
-            const teamNum = idx + 1;
-            const total = getTotalScore(team);
-
-            // Get score for each round from API data
-            const getRoundScore = (round: number): number => {
-              if (round === 1) {
-                // Babak 1: gunakan API detail (merge semua entry)
-                return babak1Entries[String(teamNum)] || 0;
-              } else {
-                // Babak 2-4: gunakan API summary (score_each_babak)
-                return babakTotals[round]?.[String(teamNum)] || 0;
-              }
-            };
-
-            // Get total from API summary
-            const apiTotal = summaryTotals[String(teamNum)] || total;
+          {rounds.map((babak) => {
+            const babakEntries = entriesByBabak[babak] ?? {};
+            const maxRows = Math.max(
+              1,
+              ...Object.values(babakEntries).map((v) => v.length),
+            );
 
             return (
-              <tr
-                key={team.id}
-                className={cn(
-                  "border-b border-white/5 transition-all hover:brightness-110",
-                  TEAM_ROW_COLORS[team.color],
-                  idx % 2 === 0 ? "" : "bg-white/[0.02]",
-                )}
-              >
-                <td className="px-6 py-4">
-                  <span
-                    className={cn(
-                      "font-black text-xl",
-                      TEAM_HEADER_COLORS[team.color],
+              <>
+                {/* ── Entry rows ───────────────────────────────────── */}
+                {Array.from({ length: maxRows }, (_, rowIdx) => (
+                  <tr
+                    key={`${babak}-row-${rowIdx}`}
+                    className="border-b border-white/[0.05] hover:bg-white/[0.02] transition-colors"
+                  >
+                    {/* Babak number: only first row, spans all entry rows */}
+                    {rowIdx === 0 && (
+                      <td
+                        rowSpan={maxRows}
+                        className="px-5 py-3 text-center text-3xl font-black text-white/20 align-middle border-r border-white/5 select-none"
+                      >
+                        {babak}
+                      </td>
                     )}
-                  >
-                    {team.name}
-                  </span>
-                </td>
-                {completedRounds.map((round) => (
-                  <td
-                    key={round}
-                    className="px-6 py-4 text-center text-2xl font-bold tabular-nums text-white/80"
-                  >
-                    {getRoundScore(round)}
-                  </td>
+
+                    {teams.map((team, teamIdx) => {
+                      const teamNum = String(teamIdx + 1);
+                      const val = babakEntries[teamNum]?.[rowIdx];
+                      return (
+                        <td
+                          key={team.id}
+                          className={cn(
+                            "px-5 py-2.5 text-center text-base font-semibold tabular-nums",
+                            val === undefined
+                              ? "text-white/10"
+                              : val > 0
+                                ? "text-emerald-400"
+                                : val < 0
+                                  ? "text-rose-400"
+                                  : "text-white/40",
+                          )}
+                        >
+                          {val !== undefined ? val : "—"}
+                        </td>
+                      );
+                    })}
+                  </tr>
                 ))}
-                <td className="px-6 py-4 text-center">
-                  <span className="text-3xl font-black tabular-nums text-white">
-                    {apiTotal}
-                  </span>
-                </td>
-              </tr>
+
+                {/* ── Total per babak row ───────────────────────────── */}
+                <tr
+                  key={`${babak}-total`}
+                  className="border-b-2 border-white/15 bg-white/[0.04]"
+                >
+                  <td className="px-5 py-3 text-[11px] font-black uppercase tracking-widest text-white/40">
+                    Total B{babak}
+                  </td>
+                  {teams.map((team, teamIdx) => {
+                    const total = babakTotals[babak]?.[String(teamIdx + 1)] ?? 0;
+                    return (
+                      <td
+                        key={team.id}
+                        className={cn(
+                          "px-5 py-3 text-center text-xl font-black tabular-nums",
+                          TEAM_HEADER_COLORS[team.color],
+                        )}
+                      >
+                        {total}
+                      </td>
+                    );
+                  })}
+                </tr>
+              </>
             );
           })}
-        </tbody>
 
-        {/* Footer: total per babak */}
-        <tfoot>
-          <tr className="border-t-2 border-white/20 bg-white/5">
-            <td className="px-6 py-3 text-white/50 text-sm font-bold uppercase">
-              Jumlah
+          {/* ── Grand total row ─────────────────────────────────────── */}
+          <tr className="bg-amber-950/30 border-t-2 border-amber-500/20">
+            <td className="px-5 py-4 text-[11px] font-black uppercase tracking-widest text-amber-400/80">
+              Total Akhir
             </td>
-            {completedRounds.map((round) => {
-              // Get column total from API data
-              let colTotal = 0;
-              if (round === 1) {
-                // Babak 1: sum from detail entries
-                colTotal = Object.values(babak1Entries).reduce(
-                  (sum, val) => sum + val,
-                  0,
-                );
-              } else {
-                // Babak 2-4: sum from score_each_babak
-                colTotal = Object.values(babakTotals[round] || {}).reduce(
-                  (sum, val) => sum + val,
-                  0,
-                );
-              }
-
+            {teams.map((team, teamIdx) => {
+              const total = summaryTotals[String(teamIdx + 1)] ?? 0;
               return (
                 <td
-                  key={round}
-                  className="px-6 py-3 text-center text-lg font-bold text-white/50 tabular-nums"
+                  key={team.id}
+                  className={cn(
+                    "px-5 py-4 text-center text-2xl font-black tabular-nums",
+                    TEAM_HEADER_COLORS[team.color],
+                  )}
                 >
-                  {colTotal}
+                  {total}
                 </td>
               );
             })}
-            <td className="px-6 py-3 text-center text-lg font-bold text-white/50 tabular-nums">
-              {Object.values(summaryTotals).reduce((sum, val) => sum + val, 0)}
-            </td>
           </tr>
-        </tfoot>
+        </tbody>
       </table>
     </div>
   );

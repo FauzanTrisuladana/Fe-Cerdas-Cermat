@@ -7,6 +7,7 @@ import { useGameState } from "@/hooks/use-game-state";
 import { useScoreWebSocket } from "@/hooks/use-score-websocket";
 import { ScoreTable } from "@/components/skor/score-table";
 import { ScoreSummary } from "@/components/skor/score-summary";
+import { ScoreDetailTable } from "@/components/skor/score-detail-table";
 import HeaderComp from "@/components/shared/header-comp";
 import type { ScoreChange } from "@/components/proyektor/types";
 import {
@@ -234,6 +235,9 @@ function AdminSkorPage() {
 
         {/* Ringkasan Skor Total */}
         <ScoreSummary state={state} />
+
+        {/* Tabel Rincian Skor per Babak */}
+        <ScoreDetailTable detailData={detailData} state={state} />
       </div>
     </>
   );

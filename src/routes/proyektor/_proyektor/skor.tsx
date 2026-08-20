@@ -75,10 +75,10 @@ function ProyektorSkor() {
   // Default [] agar tabel kosong sebelum API terpanggil (tidak menampilkan kolom dummy)
   const completedRounds = detailData
     ? Array.from(
-        new Set(
-          detailData.data.map((entry: ScoreEntry) => parseInt(entry.babak)),
-        ),
-      ).sort((a, b) => a - b)
+      new Set(
+        detailData.data.map((entry: ScoreEntry) => parseInt(entry.babak)),
+      ),
+    ).sort((a, b) => a - b)
     : [];
 
   return (
@@ -117,25 +117,20 @@ function ProyektorSkor() {
       </div>
 
       {/* Tabel skor */}
-      <div className="flex-1 flex items-start justify-center overflow-y-auto">
-        <div className="w-full max-w-4xl">
-          <SkorTable
-            completedRounds={completedRounds}
-            detailData={detailData}
-          />
-        </div>
-      </div>
+      <SkorTable
+        completedRounds={completedRounds}
+        detailData={detailData}
+      />
 
       {/* Badge babak selesai */}
       <div className="flex justify-center gap-3 flex-shrink-0">
         {[1, 2, 3, 4].map((b) => (
           <span
             key={b}
-            className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
-              completedRounds.includes(b)
-                ? "bg-emerald-800/60 text-emerald-300 border border-emerald-600/50"
-                : "bg-white/5 text-white/20 border border-white/10"
-            }`}
+            className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${completedRounds.includes(b)
+              ? "bg-emerald-800/60 text-emerald-300 border border-emerald-600/50"
+              : "bg-white/5 text-white/20 border border-white/10"
+              }`}
           >
             Babak {b}
           </span>
