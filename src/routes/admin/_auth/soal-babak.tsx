@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useGameState } from "@/hooks/use-game-state";
-import { useScoreWebSocket } from "@/hooks/use-score-websocket";
+import { useRealtimeSync } from "@/hooks/use-realtime-sync";
 import { BabakControls } from "@/components/soal-babak/babak-controls";
 import { Babak2Controls } from "@/components/soal-babak/babak2-controls";
 import { Babak3Controls } from "@/components/soal-babak/babak3-controls";
@@ -19,8 +19,8 @@ function AdminSoalBabakPage() {
   const { state, updateState } = useGameState();
   const [ttsInput, setTtsInput] = useState("");
 
-  // ─── WebSocket: skor real-time untuk MiniScoreboard ───────────────────────
-  useScoreWebSocket();
+  // ─── WebSocket: skor real-time & timer ──────────────────────────────────────
+  useRealtimeSync();
 
   const handleSetView = (view: string, round?: number) => {
     updateState((prev) => ({

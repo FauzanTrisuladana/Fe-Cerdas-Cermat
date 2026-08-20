@@ -145,7 +145,8 @@ export function SkorTable({
                     Total B{babak}
                   </td>
                   {teams.map((team, teamIdx) => {
-                    const total = babakTotals[babak]?.[String(teamIdx + 1)] ?? 0;
+                    const total =
+                      babakTotals[babak]?.[String(teamIdx + 1)] ?? 0;
                     return (
                       <td
                         key={team.id}

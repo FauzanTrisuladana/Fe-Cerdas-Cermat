@@ -1,10 +1,21 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router'
 import { useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useGameState } from "@/hooks/use-game-state";
+import { useRealtimeSync } from "@/hooks/use-realtime-sync";
 import { TimerDisplay } from "@/components/waktu/timer-display";
 import { DurationSettings } from "@/components/waktu/duration-settings";
 import HeaderComp from "@/components/shared/header-comp";
 import { Clock } from "lucide-react";
+import {
+  getTimer,
+  playTimer,
+  pauseTimer,
+  resetTimer,
+  setTimer,
+  calcTimerState,
+} from "@/services/timerService";
 
 export const Route = createFileRoute("/admin/_auth/waktu")({
   component: AdminWaktuPage,
@@ -13,14 +24,86 @@ export const Route = createFileRoute("/admin/_auth/waktu")({
 function AdminWaktuPage() {
   const { state, updateState } = useGameState();
 
-  // Countdown timer logic running on the Admin panel
+  // Sinkronisasi realtime
+  useRealtimeSync();
+
+  // Server functions
+  const getTimerFn = useServerFn(getTimer);
+  const playTimerFn = useServerFn(playTimer);
+  const pauseTimerFn = useServerFn(pauseTimer);
+  const resetTimerFn = useServerFn(resetTimer);
+  const setTimerFn = useServerFn(setTimer);
+
+  // Fetch initial timer state
+  useQuery({
+    queryKey: ["timer"],
+    queryFn: async () => {
+      const response = await getTimerFn();
+      if (response?.data) {
+        const { remaining, isRunning, duration } = calcTimerState(response.data);
+        updateState((prev) => ({
+          ...prev,
+          timerDuration: duration,
+          timerRemaining: remaining,
+          isTimerRunning: isRunning,
+          timerEnded: response.data.ended,
+        }));
+      }
+      return response;
+    },
+    // Hanya ambil sekali saat mount, selebihnya diurus websocket
+    staleTime: Infinity,
+  });
+
+  // ─── Mutations ─────────────────────────────────────────────────────────────
+
+  const playMutation = useMutation({
+    mutationFn: () => playTimerFn(),
+  });
+
+  const pauseMutation = useMutation({
+    mutationFn: () => pauseTimerFn(),
+  });
+
+  const resetMutation = useMutation({
+    mutationFn: () => resetTimerFn(),
+  });
+
+  const setMutation = useMutation({
+    mutationFn: (duration: number) => setTimerFn({ data: { duration } }),
+  });
+
+  // ─── Handlers ──────────────────────────────────────────────────────────────
+
+  const handleStartTimer = () => {
+    playMutation.mutate();
+  };
+
+  const handlePauseTimer = () => {
+    pauseMutation.mutate();
+  };
+
+  const handleResetTimer = () => {
+    resetMutation.mutate();
+  };
+
+  const handleSetDuration = (seconds: number) => {
+    setMutation.mutate(seconds);
+  };
+
+  // ─── Local Countdown for Admin Display ──────────────────────────────────────
+  // Hitung mundur lokal agar display di admin terlihat berjalan
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | null = null;
 
-    if (state.isTimerRunning && state.timerRemaining > 0) {
+    if (state.isTimerRunning && state.timerRemaining > 0 && state.timerEnded) {
       interval = setInterval(() => {
+        const endedMs = new Date(state.timerEnded!).getTime();
+        const nowMs = Date.now();
+        const remaining = Math.max(0, Math.ceil((endedMs - nowMs) / 1000));
+
         updateState((prev) => {
-          if (prev.timerRemaining <= 1) {
+          if (remaining <= 0) {
             if (interval) clearInterval(interval);
             // Play time up sound on proyektor
             return {
@@ -35,7 +118,7 @@ function AdminWaktuPage() {
           }
           return {
             ...prev,
-            timerRemaining: prev.timerRemaining - 1,
+            timerRemaining: remaining,
           };
         });
       }, 1000);
@@ -44,38 +127,7 @@ function AdminWaktuPage() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [state.isTimerRunning, state.timerRemaining, updateState]);
-
-  const handleStartTimer = () => {
-    updateState((prev) => ({
-      ...prev,
-      isTimerRunning: true,
-    }));
-  };
-
-  const handlePauseTimer = () => {
-    updateState((prev) => ({
-      ...prev,
-      isTimerRunning: false,
-    }));
-  };
-
-  const handleResetTimer = () => {
-    updateState((prev) => ({
-      ...prev,
-      timerRemaining: prev.timerDuration,
-      isTimerRunning: false,
-    }));
-  };
-
-  const handleSetDuration = (seconds: number) => {
-    updateState((prev) => ({
-      ...prev,
-      timerDuration: seconds,
-      timerRemaining: seconds,
-      isTimerRunning: false,
-    }));
-  };
+  }, [state.isTimerRunning, state.timerEnded, updateState]);
 
   return (
     <>

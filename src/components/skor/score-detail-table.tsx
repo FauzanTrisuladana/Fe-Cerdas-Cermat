@@ -68,8 +68,8 @@ export function ScoreDetailTable({ detailData, state }: ScoreDetailTableProps) {
       <CardHeader>
         <CardTitle>Rincian Skor per Babak</CardTitle>
         <CardDescription>
-          Setiap baris adalah poin per pertanyaan, dipisahkan per babak.
-          Negatif berarti pengurangan poin.
+          Setiap baris adalah poin per pertanyaan, dipisahkan per babak. Negatif
+          berarti pengurangan poin.
         </CardDescription>
       </CardHeader>
       <CardContent className="p-0">

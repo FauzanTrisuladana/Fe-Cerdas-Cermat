@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface TimerDisplayProps {
-  /** Waktu dalam detik */
+  /** Waktu dalam detik (dipakai sebagai awal, atau jika tidak ada timerEnded) */
   initialSeconds: number;
   isRunning?: boolean;
+  timerEnded?: string | null;
   onTimeout?: () => void;
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
@@ -21,6 +22,7 @@ function formatTime(seconds: number): string {
 export function TimerDisplay({
   initialSeconds,
   isRunning = false,
+  timerEnded,
   onTimeout,
   size = "xl",
   className,
@@ -28,6 +30,7 @@ export function TimerDisplay({
   const [seconds, setSeconds] = useState(initialSeconds);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // Sync state if initialSeconds changes (e.g. paused/reset)
   useEffect(() => {
     setSeconds(initialSeconds);
   }, [initialSeconds]);
@@ -36,12 +39,21 @@ export function TimerDisplay({
     if (isRunning && seconds > 0) {
       intervalRef.current = setInterval(() => {
         setSeconds((prev) => {
-          if (prev <= 1) {
+          let nextSeconds = prev - 1;
+          
+          // Jika ada server timestamp, hitung persis dari waktu server
+          if (timerEnded) {
+            const endedMs = new Date(timerEnded).getTime();
+            const nowMs = Date.now();
+            nextSeconds = Math.max(0, Math.ceil((endedMs - nowMs) / 1000));
+          }
+
+          if (nextSeconds <= 0) {
             clearInterval(intervalRef.current!);
             onTimeout?.();
             return 0;
           }
-          return prev - 1;
+          return nextSeconds;
         });
       }, 1000);
     } else {
@@ -50,7 +62,7 @@ export function TimerDisplay({
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRunning, onTimeout]);
+  }, [isRunning, onTimeout, timerEnded]);
 
   const isLow = seconds <= 10 && seconds > 0;
   const isDone = seconds === 0;

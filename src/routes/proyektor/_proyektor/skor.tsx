@@ -4,7 +4,6 @@ import { Home, Monitor } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useGameState } from "@/hooks/use-game-state";
-import { useScoreWebSocket } from "@/hooks/use-score-websocket";
 import { SkorTable } from "@/components/proyektor/skor-table";
 import { getScoreDetail } from "@/services/scoreService";
 import type { ScoreEntry } from "@/services/scoreService";
@@ -15,9 +14,6 @@ export const Route = createFileRoute("/proyektor/_proyektor/skor")({
 
 function ProyektorSkor() {
   const { updateState } = useGameState();
-
-  // ─── WebSocket: Listen for real-time score updates ─────────────────────────
-  useScoreWebSocket();
 
   // ─── API: Fetch score detail ───────────────────────────────────────────────
   const getScoreDetailFn = useServerFn(getScoreDetail);
@@ -75,10 +71,10 @@ function ProyektorSkor() {
   // Default [] agar tabel kosong sebelum API terpanggil (tidak menampilkan kolom dummy)
   const completedRounds = detailData
     ? Array.from(
-      new Set(
-        detailData.data.map((entry: ScoreEntry) => parseInt(entry.babak)),
-      ),
-    ).sort((a, b) => a - b)
+        new Set(
+          detailData.data.map((entry: ScoreEntry) => parseInt(entry.babak)),
+        ),
+      ).sort((a, b) => a - b)
     : [];
 
   return (
@@ -117,25 +113,7 @@ function ProyektorSkor() {
       </div>
 
       {/* Tabel skor */}
-      <SkorTable
-        completedRounds={completedRounds}
-        detailData={detailData}
-      />
-
-      {/* Badge babak selesai */}
-      <div className="flex justify-center gap-3 flex-shrink-0">
-        {[1, 2, 3, 4].map((b) => (
-          <span
-            key={b}
-            className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${completedRounds.includes(b)
-              ? "bg-emerald-800/60 text-emerald-300 border border-emerald-600/50"
-              : "bg-white/5 text-white/20 border border-white/10"
-              }`}
-          >
-            Babak {b}
-          </span>
-        ))}
-      </div>
+      <SkorTable completedRounds={completedRounds} detailData={detailData} />
     </div>
   );
 }

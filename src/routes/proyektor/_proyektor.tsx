@@ -1,4 +1,5 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { useRealtimeSync } from "@/hooks/use-realtime-sync";
 
 export const Route = createFileRoute("/proyektor/_proyektor")({
   component: ProyektorLayout,
@@ -9,8 +10,12 @@ export const Route = createFileRoute("/proyektor/_proyektor")({
  * - Fullscreen, dark background
  * - Toaster diposisikan di tengah untuk notifikasi skor
  * - Non-interaktif (tanpa sidebar/header admin)
+ * - useRealtimeSync di sini agar semua child routes tersinkron (skor + timer)
  */
 function ProyektorLayout() {
+  // Sinkron real-time: score + timer via WebSocket
+  useRealtimeSync();
+
   return (
     <div className="relative min-h-svh w-full bg-slate-950 text-white overflow-hidden">
       {/* Subtle noise/grain background */}
@@ -34,3 +39,4 @@ function ProyektorLayout() {
     </div>
   );
 }
+

@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import { TimScoreCard } from "./tim-score-card";
 import { TimerDisplay } from "./timer-display";
 import { useGameState } from "@/hooks/use-game-state";
-import { useScoreWebSocket } from "@/hooks/use-score-websocket";
 import type { CrosswordCell, CrosswordClue } from "./types";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -27,9 +26,6 @@ function playSound(type: "correct" | "wrong" | "countdown" | "timesup") {
 export function Babak3View() {
   const { state, updateState } = useGameState();
   const soundTimestampRef = useRef(state.soundTrigger.timestamp);
-
-  // ─── WebSocket: Listen for real-time score updates ─────────────────────────
-  useScoreWebSocket();
 
   // ─── API: Fetch score detail for sync ──────────────────────────────────────
   const getScoreDetailFn = useServerFn(getScoreDetail);
@@ -168,6 +164,7 @@ export function Babak3View() {
         <TimerDisplay
           initialSeconds={state.timerRemaining}
           isRunning={state.isTimerRunning}
+          timerEnded={state.timerEnded}
           onTimeout={() => {
             updateState((prev) => ({
               ...prev,

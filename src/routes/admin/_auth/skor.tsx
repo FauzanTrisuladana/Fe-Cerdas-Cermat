@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { useGameState } from "@/hooks/use-game-state";
-import { useScoreWebSocket } from "@/hooks/use-score-websocket";
+import { useRealtimeSync } from "@/hooks/use-realtime-sync";
 import { ScoreTable } from "@/components/skor/score-table";
 import { ScoreSummary } from "@/components/skor/score-summary";
 import { ScoreDetailTable } from "@/components/skor/score-detail-table";
@@ -27,7 +27,7 @@ function AdminSkorPage() {
   const [tempScores, setTempScores] = useState<Record<string, number>>({});
 
   // ─── WebSocket: Listen for real-time score updates ─────────────────────────
-  useScoreWebSocket();
+  useRealtimeSync();
 
   // ─── API: Fetch score detail & summary ─────────────────────────────────────
   const getScoreDetailFn = useServerFn(getScoreDetail);

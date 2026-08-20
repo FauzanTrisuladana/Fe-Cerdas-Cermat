@@ -17,6 +17,7 @@ export interface GameStateData {
   timerDuration: number;
   timerRemaining: number;
   isTimerRunning: boolean;
+  timerEnded: string | null; // ISO timestamp dari backend (kapan timer habis)
   // Babak 2 (Tebak Gambar)
   babak2QuestionIdx: number;
   babak2RevealedCount: number;
@@ -37,7 +38,7 @@ export interface GameStateData {
 const STORAGE_KEY = "cc_game_state_v1";
 // Naikkan versi ini setiap kali DEFAULT_STATE berubah secara breaking
 // agar localStorage lama (yg menyimpan dummy scores) otomatis di-clear
-const STATE_VERSION = 2;
+const STATE_VERSION = 3;
 const STATE_VERSION_KEY = "cc_game_state_version";
 
 const DEFAULT_STATE: GameStateData = {
@@ -47,6 +48,7 @@ const DEFAULT_STATE: GameStateData = {
   timerDuration: 90,
   timerRemaining: 90,
   isTimerRunning: false,
+  timerEnded: null,
   babak2QuestionIdx: 0,
   babak2RevealedCount: 1,
   crossword: DUMMY_CROSSWORD,

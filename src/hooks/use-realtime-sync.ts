@@ -4,15 +4,16 @@ import { toast } from "sonner";
 import { getEcho } from "@/lib/echo";
 import { useGameState } from "@/hooks/use-game-state";
 import type { ScoreEntry } from "@/services/scoreService";
+import { calcTimerState, type TimerData } from "@/services/timerService";
 
 /**
- * Hook untuk mendengarkan WebSocket score updates.
- * Ketika ada perubahan skor dari backend, hook ini akan:
- * 1. Mengupdate game state secara real-time
- * 2. Menampilkan toaster notifikasi
- * 3. Invalidasi query skor untuk refetch
+ * Hook gabungan untuk mendengarkan WebSocket updates:
+ * 1. Score channel → update skor tim real-time
+ * 2. Timer channel → sinkron timer antar semua device
+ *
+ * Panggil di layout level agar semua child routes otomatis tersinkron.
  */
-export function useScoreWebSocket() {
+export function useRealtimeSync() {
   const queryClient = useQueryClient();
   const { updateState } = useGameState();
 
@@ -20,10 +21,10 @@ export function useScoreWebSocket() {
     const echo = getEcho();
     if (!echo) return;
 
-    const channel = echo.channel("score");
+    // ─── Score Channel ──────────────────────────────────────────────────────
+    const scoreChannel = echo.channel("score");
 
-    channel.listen(".score.col.activity", (data: ScoreEntry) => {
-      console.log(data);
+    scoreChannel.listen(".score.col.activity", (data: ScoreEntry) => {
       const teamNum = parseInt(data.team);
       const teamName = `RT ${String(teamNum).padStart(2, "0")}`;
       const delta = data.value;
@@ -72,8 +73,28 @@ export function useScoreWebSocket() {
       queryClient.invalidateQueries({ queryKey: ["score-summary"] });
     });
 
+    // ─── Timer Channel ──────────────────────────────────────────────────────
+    const timerChannel = echo.channel("timer");
+
+    timerChannel.listen(".timer.col.activity", (data: TimerData) => {
+      const { remaining, isRunning, duration } = calcTimerState(data);
+
+      updateState((prev) => ({
+        ...prev,
+        timerDuration: duration,
+        timerRemaining: remaining,
+        isTimerRunning: isRunning,
+        // Simpan ended timestamp agar proyektor bisa hitung sendiri
+        timerEnded: data.ended,
+      }));
+
+      // Invalidate timer query jika ada
+      queryClient.invalidateQueries({ queryKey: ["timer"] });
+    });
+
     return () => {
-      channel.stopListening(".score.col.activity");
+      scoreChannel.stopListening(".score.col.activity");
+      timerChannel.stopListening(".timer.col.activity");
     };
   }, [updateState, queryClient]);
 }
