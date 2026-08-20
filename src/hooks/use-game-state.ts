@@ -35,6 +35,10 @@ export interface GameStateData {
 }
 
 const STORAGE_KEY = "cc_game_state_v1";
+// Naikkan versi ini setiap kali DEFAULT_STATE berubah secara breaking
+// agar localStorage lama (yg menyimpan dummy scores) otomatis di-clear
+const STATE_VERSION = 2;
+const STATE_VERSION_KEY = "cc_game_state_version";
 
 const DEFAULT_STATE: GameStateData = {
   teams: DUMMY_TEAMS,
@@ -56,6 +60,14 @@ const DEFAULT_STATE: GameStateData = {
 export function useGameState() {
   const [state, setState] = useState<GameStateData>(() => {
     if (typeof window !== "undefined") {
+      // Cek versi state — jika beda, clear localStorage dan pakai DEFAULT_STATE
+      const savedVersion = localStorage.getItem(STATE_VERSION_KEY);
+      if (savedVersion !== String(STATE_VERSION)) {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.setItem(STATE_VERSION_KEY, String(STATE_VERSION));
+        return DEFAULT_STATE;
+      }
+
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         try {

@@ -72,14 +72,14 @@ function ProyektorSkor() {
   }, [detailData, updateState]);
 
   // ─── Determine completed rounds from API data ──────────────────────────────
-  // Babak yang sudah dilaksanakan = babak yang ada di data detail
+  // Default [] agar tabel kosong sebelum API terpanggil (tidak menampilkan kolom dummy)
   const completedRounds = detailData
     ? Array.from(
         new Set(
           detailData.data.map((entry: ScoreEntry) => parseInt(entry.babak)),
         ),
       ).sort((a, b) => a - b)
-    : [1, 2, 3];
+    : [];
 
   return (
     <div className="flex flex-col flex-1 gap-6 min-h-0">

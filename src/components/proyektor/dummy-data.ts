@@ -7,31 +7,31 @@ export const DUMMY_TEAMS: Team[] = [
     id: "rt01",
     name: "RT 01",
     color: "blue",
-    scores: { babak1: 100, babak2: 75, babak3: 50, babak4: 0 },
+    scores: { babak1: 0, babak2: 0, babak3: 0, babak4: 0 },
   },
   {
     id: "rt02",
     name: "RT 02",
     color: "green",
-    scores: { babak1: 75, babak2: 100, babak3: 25, babak4: 0 },
+    scores: { babak1: 0, babak2: 0, babak3: 0, babak4: 0 },
   },
   {
     id: "rt03",
     name: "RT 03",
     color: "yellow",
-    scores: { babak1: 125, babak2: 50, babak3: 75, babak4: 0 },
+    scores: { babak1: 0, babak2: 0, babak3: 0, babak4: 0 },
   },
   {
     id: "rt04",
     name: "RT 04",
     color: "red",
-    scores: { babak1: 50, babak2: 125, babak3: 100, babak4: 0 },
+    scores: { babak1: 0, babak2: 0, babak3: 0, babak4: 0 },
   },
   {
     id: "rt05",
     name: "RT 05",
     color: "purple",
-    scores: { babak1: 150, babak2: 25, babak3: 0, babak4: 0 },
+    scores: { babak1: 0, babak2: 0, babak3: 0, babak4: 0 },
   },
 ];
 
