@@ -40,7 +40,7 @@ export function TimerDisplay({
       intervalRef.current = setInterval(() => {
         setSeconds((prev) => {
           let nextSeconds = prev - 1;
-          
+
           // Jika ada server timestamp, hitung persis dari waktu server
           if (timerEnded) {
             const endedMs = new Date(timerEnded).getTime();

@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -40,7 +40,9 @@ function AdminWaktuPage() {
     queryFn: async () => {
       const response = await getTimerFn();
       if (response?.data) {
-        const { remaining, isRunning, duration } = calcTimerState(response.data);
+        const { remaining, isRunning, duration } = calcTimerState(
+          response.data,
+        );
         updateState((prev) => ({
           ...prev,
           timerDuration: duration,
@@ -110,10 +112,6 @@ function AdminWaktuPage() {
               ...prev,
               timerRemaining: 0,
               isTimerRunning: false,
-              soundTrigger: {
-                type: "timesup",
-                timestamp: Date.now(),
-              },
             };
           }
           return {

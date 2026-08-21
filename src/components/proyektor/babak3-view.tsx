@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { TimScoreCard } from "./tim-score-card";
 import { TimerDisplay } from "./timer-display";
@@ -9,23 +9,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { getScoreDetail } from "@/services/scoreService";
 import type { ScoreEntry } from "@/services/scoreService";
 
-function playSound(type: "correct" | "wrong" | "countdown" | "timesup") {
-  const audioMap: Record<string, string> = {
-    correct: "/correct.mp3",
-    wrong: "/wrong.mp3",
-    countdown: "/countdown.mp3",
-    timesup: "/timesup.mp3",
-  };
-  try {
-    const audio = new Audio(audioMap[type]);
-    audio.volume = 0.8;
-    audio.play().catch(() => {});
-  } catch (_) {}
-}
-
 export function Babak3View() {
   const { state, updateState } = useGameState();
-  const soundTimestampRef = useRef(state.soundTrigger.timestamp);
 
   // ─── API: Fetch score detail for sync ──────────────────────────────────────
   const getScoreDetailFn = useServerFn(getScoreDetail);
@@ -78,15 +63,6 @@ export function Babak3View() {
       };
     });
   }, [detailData, updateState]);
-
-  // Trigger sound effect
-  useEffect(() => {
-    const trigger = state.soundTrigger;
-    if (trigger.type && trigger.timestamp !== soundTimestampRef.current) {
-      soundTimestampRef.current = trigger.timestamp;
-      playSound(trigger.type);
-    }
-  }, [state.soundTrigger]);
 
   // Find active clue
   const activeClue =

@@ -4,7 +4,8 @@ import { toast } from "sonner";
 import { getEcho } from "@/lib/echo";
 import { useGameState } from "@/hooks/use-game-state";
 import type { ScoreEntry } from "@/services/scoreService";
-import { calcTimerState, type TimerData } from "@/services/timerService";
+import { calcTimerState } from "@/services/timerService";
+import type { TimerData } from "@/services/timerService";
 
 /**
  * Hook gabungan untuk mendengarkan WebSocket updates:
@@ -81,7 +82,9 @@ export function useRealtimeSync() {
       if (data.ended) {
         toast.info("Timer dijalankan", { icon: "▶️" });
       } else if (data.status === "paused") {
-        toast.warning(`Timer dijeda pada sisa ${data.remaining} detik`, { icon: "⏸️" });
+        toast.warning(`Timer dijeda pada sisa ${data.remaining} detik`, {
+          icon: "⏸️",
+        });
       } else {
         toast.success(`Timer diatur ke ${data.duration} detik`, { icon: "🔄" });
       }
@@ -101,9 +104,21 @@ export function useRealtimeSync() {
       queryClient.invalidateQueries({ queryKey: ["timer"] });
     });
 
+    // ─── Game State Channel ─────────────────────────────────────────────────
+    const gameStateChannel = echo.channel("game-state");
+
+    gameStateChannel.listen(".game.state.updated", (data: any) => {
+      // Data berisi state parsial seperti { currentView: "babak1", activeRound: 1, ... }
+      updateState((prev) => ({
+        ...prev,
+        ...data,
+      }));
+    });
+
     return () => {
       scoreChannel.stopListening(".score.col.activity");
       timerChannel.stopListening(".timer.col.activity");
+      gameStateChannel.stopListening(".game.state.updated");
     };
   }, [updateState, queryClient]);
 }

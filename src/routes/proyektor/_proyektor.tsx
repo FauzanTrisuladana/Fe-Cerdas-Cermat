@@ -1,20 +1,61 @@
-import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useRealtimeSync } from "@/hooks/use-realtime-sync";
+import { useGameState } from "@/hooks/use-game-state";
+import { getGameState } from "@/services/gameStateService";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/proyektor/_proyektor")({
   component: ProyektorLayout,
 });
 
-/**
- * Layout parent untuk semua halaman proyektor.
- * - Fullscreen, dark background
- * - Toaster diposisikan di tengah untuk notifikasi skor
- * - Non-interaktif (tanpa sidebar/header admin)
- * - useRealtimeSync di sini agar semua child routes tersinkron (skor + timer)
- */
 function ProyektorLayout() {
-  // Sinkron real-time: score + timer via WebSocket
   useRealtimeSync();
+  const { state, updateState } = useGameState();
+  const navigate = useNavigate();
+
+  // 1. Fetch initial game state from server (supaya dapat halaman terakhir)
+  const getGameStateFn = useServerFn(getGameState);
+
+  useQuery({
+    queryKey: ["game-state-initial"],
+    queryFn: async () => {
+      try {
+        const response = await getGameStateFn();
+        if (response?.data) {
+          updateState((prev) => ({
+            ...prev,
+            ...response.data
+          }));
+        }
+        return response;
+      } catch (error) {
+        console.error("Failed to fetch initial game state:", error);
+        return null;
+      }
+    },
+    refetchOnWindowFocus: false,
+    staleTime: Infinity, // Cukup fetch sekali di awal
+  });
+
+  // 2. Efek untuk otomatis berpindah halaman jika currentView berubah
+  useEffect(() => {
+    const viewToUrl: Record<string, string> = {
+      judul: "/proyektor",
+      babak1: "/proyektor/babak/1",
+      babak2: "/proyektor/babak/2",
+      babak3: "/proyektor/babak/3",
+      babak4: "/proyektor/babak/4",
+      skor: "/proyektor/skor",
+    };
+
+    const targetUrl = viewToUrl[state.currentView];
+
+    if (targetUrl) {
+      navigate({ to: targetUrl, replace: true });
+    }
+  }, [state.currentView, navigate]);
 
   return (
     <div className="relative min-h-svh w-full bg-slate-950 text-white overflow-hidden">

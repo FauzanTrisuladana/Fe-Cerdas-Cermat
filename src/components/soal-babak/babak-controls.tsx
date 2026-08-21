@@ -65,15 +65,6 @@ export function BabakControls({ state, onSetView }: BabakControlsProps) {
           <Trophy className="w-4 h-4" />
           Papan Skor Akhir
         </Button>
-        <Button
-          variant={
-            state.currentView === "score-transition" ? "default" : "outline"
-          }
-          onClick={() => onSetView("score-transition")}
-          className="bg-amber-600 hover:bg-amber-700 text-white"
-        >
-          Transisi Skor
-        </Button>
       </CardContent>
     </Card>
   );

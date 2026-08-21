@@ -6,10 +6,11 @@ import { BabakControls } from "@/components/soal-babak/babak-controls";
 import { Babak2Controls } from "@/components/soal-babak/babak2-controls";
 import { Babak3Controls } from "@/components/soal-babak/babak3-controls";
 import { MiniScoreboard } from "@/components/soal-babak/mini-scoreboard";
-import { SoundController } from "@/components/soal-babak/sound-controller";
 import HeaderComp from "@/components/shared/header-comp";
 import { Monitor } from "lucide-react";
 import type { CrosswordClue } from "@/components/proyektor/types";
+import { updateGameState } from "@/services/gameStateService";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/_auth/soal-babak")({
   component: AdminSoalBabakPage,
@@ -22,28 +23,31 @@ function AdminSoalBabakPage() {
   // ─── WebSocket: skor real-time & timer ──────────────────────────────────────
   useRealtimeSync();
 
-  const handleSetView = (view: string, round?: number) => {
+  const handleSetView = async (view: string, round?: number) => {
+    // 1. Update local state optimistically
     updateState((prev) => ({
       ...prev,
       currentView: view,
       activeRound: round ?? prev.activeRound,
       isTimerRunning: false, // Stop timer on transition
     }));
-  };
 
-  const triggerSound = (type: "correct" | "wrong" | "timesup") => {
-    updateState((prev) => ({
-      ...prev,
-      soundTrigger: {
-        type,
-        timestamp: Date.now(),
-      },
-    }));
+    // 2. Broadcast ke proyektor via API
+    try {
+      await updateGameState({
+        data: {
+          currentView: view,
+          activeRound: round ?? state.activeRound,
+        },
+      });
+    } catch (error) {
+      toast.error("Gagal melakukan broadcast pindah halaman.");
+    }
   };
 
   // ─── BABAK 2 (Tebak Gambar) Actions ────────────────────────────────────────
 
-  const handleSetQuestionB2 = (idx: number) => {
+  const handleSetQuestionB2 = async (idx: number) => {
     updateState((prev) => ({
       ...prev,
       babak2QuestionIdx: idx,
@@ -51,24 +55,49 @@ function AdminSoalBabakPage() {
       timerRemaining: 90, // Reset timer
       isTimerRunning: false,
     }));
+    try {
+      await updateGameState({
+        data: {
+          babak2QuestionIdx: idx,
+          babak2RevealedCount: 1,
+        },
+      });
+    } catch (e) {
+      toast.error("Gagal broadcast ubah pertanyaan tebak gambar.");
+    }
   };
 
-  const handleSetRevealCount = (count: number) => {
+  const handleSetRevealCount = async (count: number) => {
     updateState((prev) => ({
       ...prev,
       babak2RevealedCount: count,
     }));
+    try {
+      await updateGameState({ data: { babak2RevealedCount: count } });
+    } catch (e) {
+      toast.error("Gagal broadcast reveal count tebak gambar.");
+    }
   };
 
   // ─── BABAK 3 (TTS) Actions ──────────────────────────────────────────────────
 
-  const handleSelectClue = (clue: CrosswordClue) => {
+  const handleSelectClue = async (clue: CrosswordClue) => {
     updateState((prev) => ({
       ...prev,
       activeClueNum: clue.number,
       activeClueDir: clue.direction,
     }));
     setTtsInput("");
+    try {
+      await updateGameState({
+        data: {
+          activeClueNum: clue.number,
+          activeClueDir: clue.direction,
+        },
+      });
+    } catch (e) {
+      toast.error("Gagal broadcast pilih TTS.");
+    }
   };
 
   const activeClue =
@@ -86,58 +115,7 @@ function AdminSoalBabakPage() {
     if (isCorrect) {
       handleRevealTTS();
     } else {
-      triggerSound("wrong");
-      // Highlight merah sementara di proyektor
-      updateState((prev) => {
-        const nextGrid = prev.crossword.grid.map((row) =>
-          row.map((cell) => {
-            const inRange =
-              activeClue.direction === "across"
-                ? cell.row === activeClue.startRow &&
-                  cell.col >= activeClue.startCol &&
-                  cell.col < activeClue.startCol + activeClue.answer.length
-                : cell.col === activeClue.startCol &&
-                  cell.row >= activeClue.startRow &&
-                  cell.row < activeClue.startRow + activeClue.answer.length;
-
-            if (inRange) {
-              return { ...cell, highlight: "wrong" as const };
-            }
-            return cell;
-          }),
-        );
-        return {
-          ...prev,
-          crossword: { ...prev.crossword, grid: nextGrid },
-        };
-      });
-
-      // Clear highlight setelah 1.5 detik
-      setTimeout(() => {
-        updateState((prev) => {
-          const nextGrid = prev.crossword.grid.map((row) =>
-            row.map((cell) =>
-              cell.highlight === "wrong"
-                ? { ...cell, highlight: undefined }
-                : cell,
-            ),
-          );
-          return {
-            ...prev,
-            crossword: { ...prev.crossword, grid: nextGrid },
-          };
-        });
-      }, 1500);
-    }
-  };
-
-  // Reveal jawaban ke grid proyektor
-  const handleRevealTTS = () => {
-    if (!activeClue) return;
-    triggerSound("correct");
-
-    updateState((prev) => {
-      const nextGrid = prev.crossword.grid.map((row) =>
+      const nextGrid = state.crossword.grid.map((row) =>
         row.map((cell) => {
           const inRange =
             activeClue.direction === "across"
@@ -149,52 +127,110 @@ function AdminSoalBabakPage() {
                 cell.row < activeClue.startRow + activeClue.answer.length;
 
           if (inRange) {
-            const letterIdx =
-              activeClue.direction === "across"
-                ? cell.col - activeClue.startCol
-                : cell.row - activeClue.startRow;
-            return {
-              ...cell,
-              letter: activeClue.answer[letterIdx],
-              revealed: true,
-              highlight: "correct" as const,
-            };
+            return { ...cell, highlight: "wrong" as const };
           }
           return cell;
         }),
       );
 
-      const nextClues = prev.crossword.clues.map((c) =>
-        c.number === activeClue.number && c.direction === activeClue.direction
-          ? { ...c, answered: true }
-          : c,
-      );
+      const newCrossword = { ...state.crossword, grid: nextGrid };
 
-      return {
+      updateState((prev) => ({
         ...prev,
-        crossword: {
-          ...prev.crossword,
-          grid: nextGrid,
-          clues: nextClues,
-        },
-      };
-    });
+        crossword: newCrossword,
+      }));
+      updateGameState({ data: { crossword: newCrossword } }).catch(() => {
+        toast.error("Gagal sinkronisasi highlight merah TTS.");
+      });
 
-    // Hapus highlight hijau setelah 3 detik
-    setTimeout(() => {
-      updateState((prev) => {
-        const nextGrid = prev.crossword.grid.map((row) =>
+      // Clear highlight setelah 1.5 detik
+      setTimeout(() => {
+        const clearGrid = newCrossword.grid.map((row) =>
           row.map((cell) =>
-            cell.highlight === "correct"
+            cell.highlight === "wrong"
               ? { ...cell, highlight: undefined }
               : cell,
           ),
         );
-        return {
+        const clearCrossword = { ...newCrossword, grid: clearGrid };
+        updateState((prev) => ({
           ...prev,
-          crossword: { ...prev.crossword, grid: nextGrid },
-        };
-      });
+          crossword: clearCrossword,
+        }));
+        updateGameState({ data: { crossword: clearCrossword } }).catch(
+          () => {},
+        );
+      }, 1500);
+    }
+  };
+
+  // Reveal jawaban ke grid proyektor
+  const handleRevealTTS = () => {
+    if (!activeClue) return;
+
+    const nextGrid = state.crossword.grid.map((row) =>
+      row.map((cell) => {
+        const inRange =
+          activeClue.direction === "across"
+            ? cell.row === activeClue.startRow &&
+              cell.col >= activeClue.startCol &&
+              cell.col < activeClue.startCol + activeClue.answer.length
+            : cell.col === activeClue.startCol &&
+              cell.row >= activeClue.startRow &&
+              cell.row < activeClue.startRow + activeClue.answer.length;
+
+        if (inRange) {
+          const letterIdx =
+            activeClue.direction === "across"
+              ? cell.col - activeClue.startCol
+              : cell.row - activeClue.startRow;
+          return {
+            ...cell,
+            letter: activeClue.answer[letterIdx],
+            revealed: true,
+            highlight: "correct" as const,
+          };
+        }
+        return cell;
+      }),
+    );
+
+    const nextClues = state.crossword.clues.map((c) =>
+      c.number === activeClue.number && c.direction === activeClue.direction
+        ? { ...c, answered: true }
+        : c,
+    );
+
+    const newCrossword = {
+      ...state.crossword,
+      grid: nextGrid,
+      clues: nextClues,
+    };
+
+    updateState((prev) => ({
+      ...prev,
+      crossword: newCrossword,
+    }));
+    updateGameState({ data: { crossword: newCrossword } }).catch(() => {
+      toast.error("Gagal sinkronisasi jawaban TTS.");
+    });
+
+    // Hapus highlight hijau setelah 3 detik
+    setTimeout(() => {
+      const clearGrid = newCrossword.grid.map((row) =>
+        row.map((cell) =>
+          cell.highlight === "correct"
+            ? { ...cell, highlight: undefined }
+            : cell,
+        ),
+      );
+      const clearCrossword = { ...newCrossword, grid: clearGrid };
+
+      updateState((prev) => ({
+        ...prev,
+        crossword: clearCrossword,
+      }));
+      updateGameState({ data: { crossword: clearCrossword } }).catch(() => {});
     }, 3000);
   };
 
@@ -234,10 +270,9 @@ function AdminSoalBabakPage() {
           )}
         </div>
 
-        {/* Side Panel: Mini Scoreboard & Sound Controller (Kanan) */}
+        {/* Side Panel: Mini Scoreboard (Kanan) */}
         <div className="flex flex-col gap-6">
           <MiniScoreboard state={state} />
-          <SoundController onTriggerSound={triggerSound} />
         </div>
       </div>
     </>

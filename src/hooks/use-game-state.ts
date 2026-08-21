@@ -25,11 +25,6 @@ export interface GameStateData {
   crossword: CrosswordState;
   activeClueNum: number | null;
   activeClueDir: "across" | "down" | null;
-  // Audio & Event Trigger (Timestamp to trigger play on proyektor)
-  soundTrigger: {
-    type: "correct" | "wrong" | "countdown" | "timesup" | null;
-    timestamp: number;
-  };
   lastScoreChange: ScoreChange | null;
   // Skor yang ditampilkan di layar (RT 01, dll. atau "all" atau "none")
   tampilSkorMode: string; // "1", "2", "3", "4", "5", "all", "none"
@@ -54,7 +49,6 @@ const DEFAULT_STATE: GameStateData = {
   crossword: DUMMY_CROSSWORD,
   activeClueNum: null,
   activeClueDir: null,
-  soundTrigger: { type: null, timestamp: 0 },
   lastScoreChange: null,
   tampilSkorMode: "all",
 };
