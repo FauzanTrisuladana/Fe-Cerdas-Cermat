@@ -26,7 +26,8 @@ function ProyektorLayout() {
         if (response?.data) {
           updateState((prev) => ({
             ...prev,
-            ...response.data
+            currentView: response.data.view,
+            activeRound: parseInt(response.data.babak) || prev.activeRound,
           }));
         }
         return response;

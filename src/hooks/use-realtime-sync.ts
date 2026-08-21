@@ -108,10 +108,11 @@ export function useRealtimeSync() {
     const gameStateChannel = echo.channel("game-state");
 
     gameStateChannel.listen(".game.state.updated", (data: any) => {
-      // Data berisi state parsial seperti { currentView: "babak1", activeRound: 1, ... }
+      // Data dari backend { view: "babak1", babak: "1" }
       updateState((prev) => ({
         ...prev,
-        ...data,
+        currentView: data.view,
+        activeRound: parseInt(data.babak) || prev.activeRound,
       }));
     });
 

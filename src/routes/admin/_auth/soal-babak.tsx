@@ -35,10 +35,7 @@ function AdminSoalBabakPage() {
     // 2. Broadcast ke proyektor via API
     try {
       await updateGameState({
-        data: {
-          currentView: view,
-          activeRound: round ?? state.activeRound,
-        },
+        data: { view },
       });
     } catch (error) {
       toast.error("Gagal melakukan broadcast pindah halaman.");
@@ -55,16 +52,6 @@ function AdminSoalBabakPage() {
       timerRemaining: 90, // Reset timer
       isTimerRunning: false,
     }));
-    try {
-      await updateGameState({
-        data: {
-          babak2QuestionIdx: idx,
-          babak2RevealedCount: 1,
-        },
-      });
-    } catch (e) {
-      toast.error("Gagal broadcast ubah pertanyaan tebak gambar.");
-    }
   };
 
   const handleSetRevealCount = async (count: number) => {
@@ -72,11 +59,6 @@ function AdminSoalBabakPage() {
       ...prev,
       babak2RevealedCount: count,
     }));
-    try {
-      await updateGameState({ data: { babak2RevealedCount: count } });
-    } catch (e) {
-      toast.error("Gagal broadcast reveal count tebak gambar.");
-    }
   };
 
   // ─── BABAK 3 (TTS) Actions ──────────────────────────────────────────────────
@@ -88,16 +70,6 @@ function AdminSoalBabakPage() {
       activeClueDir: clue.direction,
     }));
     setTtsInput("");
-    try {
-      await updateGameState({
-        data: {
-          activeClueNum: clue.number,
-          activeClueDir: clue.direction,
-        },
-      });
-    } catch (e) {
-      toast.error("Gagal broadcast pilih TTS.");
-    }
   };
 
   const activeClue =
@@ -139,9 +111,10 @@ function AdminSoalBabakPage() {
         ...prev,
         crossword: newCrossword,
       }));
-      updateGameState({ data: { crossword: newCrossword } }).catch(() => {
-        toast.error("Gagal sinkronisasi highlight merah TTS.");
-      });
+      updateState((prev) => ({
+        ...prev,
+        crossword: newCrossword,
+      }));
 
       // Clear highlight setelah 1.5 detik
       setTimeout(() => {
@@ -157,9 +130,6 @@ function AdminSoalBabakPage() {
           ...prev,
           crossword: clearCrossword,
         }));
-        updateGameState({ data: { crossword: clearCrossword } }).catch(
-          () => {},
-        );
       }, 1500);
     }
   };
@@ -211,9 +181,6 @@ function AdminSoalBabakPage() {
       ...prev,
       crossword: newCrossword,
     }));
-    updateGameState({ data: { crossword: newCrossword } }).catch(() => {
-      toast.error("Gagal sinkronisasi jawaban TTS.");
-    });
 
     // Hapus highlight hijau setelah 3 detik
     setTimeout(() => {
@@ -230,7 +197,6 @@ function AdminSoalBabakPage() {
         ...prev,
         crossword: clearCrossword,
       }));
-      updateGameState({ data: { crossword: clearCrossword } }).catch(() => {});
     }, 3000);
   };
 

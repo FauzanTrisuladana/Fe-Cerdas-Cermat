@@ -1,12 +1,20 @@
 import { createServerFn } from "@tanstack/react-start";
 import { api } from "./api";
 import { handleApiError } from "./errorService";
-import type { GameStateData } from "@/hooks/use-game-state";
+
+export interface GameStateAPIResponse {
+  view: string;
+  babak: string;
+}
+
+export interface UpdateGameStatePayload {
+  view: string;
+}
 
 interface GameStateResponse {
   status: string;
   message: string;
-  data: Partial<GameStateData>;
+  data: GameStateAPIResponse;
 }
 
 /**
@@ -24,10 +32,10 @@ export const getGameState = createServerFn({ method: "GET" }).handler(
 );
 
 /**
- * Menyimpan/memperbarui state game di server
+ * Menyimpan/memperbarui state game di server (khusus pindah halaman)
  */
 export const updateGameState = createServerFn({ method: "POST" })
-  .validator((d: Partial<GameStateData>) => d)
+  .validator((d: UpdateGameStatePayload) => d)
   .handler(async ({ data: payload }) => {
     try {
       const response = await api.post<GameStateResponse>(
