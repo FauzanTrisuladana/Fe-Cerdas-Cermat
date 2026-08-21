@@ -1,4 +1,4 @@
-import type { Team, ImageQuestion, CrosswordState, GameState } from "./types";
+import type { Team, ImageQuestion, CrosswordState, GameState, CrosswordClue, CrosswordCell } from "./types";
 
 // ─── Data Tim ────────────────────────────────────────────────────────────────
 
@@ -66,152 +66,83 @@ export const DUMMY_IMAGE_QUESTIONS: ImageQuestion[] = [
   },
 ];
 
-// ─── Data Babak 3: Teka-Teki Silang ─────────────────────────────────────────
-// Grid 7x7 sederhana untuk demo
+// ─── Utility: Build Crossword State from Clues ─────────────────────────────
 
-export const DUMMY_CROSSWORD: CrosswordState = {
-  grid: buildDummyCrosswordGrid(),
-  clues: [
-    {
-      number: 1,
-      direction: "across",
-      text: "Ibukota Indonesia",
-      answer: "JAKARTA",
-      startRow: 0,
-      startCol: 0,
-      answered: false,
-    },
-    {
-      number: 2,
-      direction: "down",
-      text: "Pulau terbesar di Indonesia",
-      answer: "KALIMANTAN",
-      startRow: 0,
-      startCol: 0,
-      answered: false,
-    },
-    {
-      number: 3,
-      direction: "across",
-      text: "Bahasa resmi Indonesia",
-      answer: "INDONESIA",
-      startRow: 2,
-      startCol: 0,
-      answered: false,
-    },
-    {
-      number: 4,
-      direction: "across",
-      text: "Semboyan Bhinneka Tunggal ___",
-      answer: "IKA",
-      startRow: 4,
-      startCol: 2,
-      answered: false,
-    },
-    {
-      number: 5,
-      direction: "down",
-      text: "Presiden pertama Indonesia",
-      answer: "SOEKARNO",
-      startRow: 0,
-      startCol: 4,
-      answered: false,
-    },
-  ],
-  activeClue: null,
-};
+export function buildCrosswordState(clues: Omit<CrosswordClue, "number">[]): CrosswordState {
+  let maxRow = 0;
+  let maxCol = 0;
 
-function buildDummyCrosswordGrid() {
-  // 10 baris x 11 kolom untuk demo TTS
-  const ROWS = 10;
-  const COLS = 11;
+  // 1. Tentukan ukuran grid maksimal berdasarkan clue
+  clues.forEach((c) => {
+    const endRow = c.direction === "down" ? c.startRow + c.answer.length - 1 : c.startRow;
+    const endCol = c.direction === "across" ? c.startCol + c.answer.length - 1 : c.startCol;
+    if (endRow > maxRow) maxRow = endRow;
+    if (endCol > maxCol) maxCol = endCol;
+  });
 
-  // Definisikan pola: 0 = kotak aktif, 1 = kotak hitam
-  const pattern = [
-    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1],
-  ];
+  const ROWS = maxRow + 1;
+  const COLS = maxCol + 1;
 
-  // Isi jawaban secara sederhana (partial, untuk demo)
-  const answers: Record<string, string> = {
-    "0,0": "J",
-    "0,1": "A",
-    "0,2": "K",
-    "0,3": "A",
-    "0,4": "R",
-    "0,5": "T",
-    "0,6": "A",
-    "1,0": "A",
-    "2,0": "I",
-    "2,1": "N",
-    "2,2": "D",
-    "2,3": "O",
-    "2,4": "N",
-    "2,5": "E",
-    "2,6": "S",
-    "2,7": "I",
-    "2,8": "A",
-    "3,0": "K",
-    "4,0": "A",
-    "4,2": "I",
-    "4,3": "K",
-    "4,4": "A",
-    "5,2": "A",
-    "6,0": "R",
-    "6,2": "L",
-    "7,0": "T",
-    "8,0": "A",
-    "9,0": "N",
-  };
-
-  const grid = [];
-  let cellNumber = 1;
-
+  // 2. Buat grid kosong
+  const grid: CrosswordCell[][] = [];
   for (let r = 0; r < ROWS; r++) {
-    const row = [];
+    const row: CrosswordCell[] = [];
     for (let c = 0; c < COLS; c++) {
-      const isBlocked = pattern[r][c] === 1;
-      const key = `${r},${c}`;
-      const letter = answers[key] ?? "";
-
-      // Berikan nomor pada sel pertama dari setiap kata
-      let number: number | undefined;
-      if (!isBlocked) {
-        const isStartAcross =
-          (c === 0 || pattern[r][c - 1] === 1) &&
-          c + 1 < COLS &&
-          pattern[r][c + 1] === 0;
-        const isStartDown =
-          (r === 0 || pattern[r - 1][c] === 1) &&
-          r + 1 < ROWS &&
-          pattern[r + 1][c] === 0;
-        if (isStartAcross || isStartDown) {
-          number = cellNumber++;
-        }
-      }
-
       row.push({
         row: r,
         col: c,
-        letter,
+        letter: "",
         revealed: false,
-        isBlocked,
-        number,
-        highlight: undefined,
+        isBlocked: true, // Default true, akan di-false-kan jika ada kata
       });
     }
     grid.push(row);
   }
 
-  return grid;
+  // 3. Masukkan huruf ke dalam grid
+  clues.forEach((c) => {
+    for (let i = 0; i < c.answer.length; i++) {
+      const r = c.direction === "down" ? c.startRow + i : c.startRow;
+      const col = c.direction === "across" ? c.startCol + i : c.startCol;
+      grid[r][col].letter = c.answer[i];
+      grid[r][col].isBlocked = false;
+      if ((c as any).answered) {
+        grid[r][col].revealed = true; // Auto-reveal untuk clue yang sudah dijawab
+      }
+    }
+  });
+
+  // 4. Hitung penomoran (kiri-ke-kanan, atas-ke-bawah)
+  let currentNumber = 1;
+  const sortedClues: CrosswordClue[] = [];
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      // Cari apakah ada clue yang berawal dari cell ini
+      const startingClues = clues.filter((cl) => cl.startRow === r && cl.startCol === c);
+      
+      if (startingClues.length > 0) {
+        // Assign nomor ke cell ini
+        grid[r][c].number = currentNumber;
+        
+        // Simpan ke clues dengan nomor yang sudah diassign
+        startingClues.forEach((cl) => {
+          sortedClues.push({
+            ...cl as CrosswordClue,
+            number: currentNumber,
+          });
+        });
+        
+        currentNumber++;
+      }
+    }
+  }
+
+  return {
+    grid,
+    clues: sortedClues,
+    activeClue: null,
+  };
 }
 
 // ─── Initial Game State ──────────────────────────────────────────────────────
@@ -229,5 +160,5 @@ export const INITIAL_GAME_STATE: GameState = {
   currentQuestionIndex: 0,
   revealedImageCount: 1,
   showScoreTransition: false,
-  crossword: DUMMY_CROSSWORD,
+  crossword: buildCrosswordState([]), // Inisialisasi awal dengan empty state
 };

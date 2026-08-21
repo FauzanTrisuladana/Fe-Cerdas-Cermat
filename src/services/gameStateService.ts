@@ -47,3 +47,18 @@ export const updateGameState = createServerFn({ method: "POST" })
       handleApiError(error);
     }
   });
+
+export interface CrosswordAPIResponse {
+  clues: any[];
+}
+
+export const getCrosswordData = createServerFn({ method: "GET" }).handler(
+  async () => {
+    try {
+      const response = await api.get<{ status: string; data: CrosswordAPIResponse }>("/crossword");
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  }
+);

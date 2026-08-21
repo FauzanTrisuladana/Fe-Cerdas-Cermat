@@ -6,7 +6,7 @@ import type {
 } from "@/components/proyektor/types";
 import {
   DUMMY_TEAMS,
-  DUMMY_CROSSWORD,
+  buildCrosswordState,
 } from "@/components/proyektor/dummy-data";
 
 export interface GameStateData {
@@ -32,7 +32,7 @@ export interface GameStateData {
 const STORAGE_KEY = "cc_game_state_v1";
 // Naikkan versi ini setiap kali DEFAULT_STATE berubah secara breaking
 // agar localStorage lama (yg menyimpan dummy scores) otomatis di-clear
-const STATE_VERSION = 3;
+const STATE_VERSION = 4;
 const STATE_VERSION_KEY = "cc_game_state_version";
 
 const DEFAULT_STATE: GameStateData = {
@@ -44,7 +44,7 @@ const DEFAULT_STATE: GameStateData = {
   isTimerRunning: false,
   timerEnded: null,
   babak2QuestionIdx: 0,
-  crossword: DUMMY_CROSSWORD,
+  crossword: buildCrosswordState([]),
   activeClueNum: null,
   activeClueDir: null,
   lastScoreChange: null,
@@ -81,7 +81,7 @@ if (typeof window !== "undefined") {
       try {
         globalState = JSON.parse(e.newValue);
         listeners.forEach((listener) => listener(globalState));
-      } catch (_) {}
+      } catch (_) { }
     }
   });
 }

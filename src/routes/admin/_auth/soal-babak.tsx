@@ -9,8 +9,11 @@ import { MiniScoreboard } from "@/components/soal-babak/mini-scoreboard";
 import HeaderComp from "@/components/shared/header-comp";
 import { Monitor } from "lucide-react";
 import type { CrosswordClue } from "@/components/proyektor/types";
-import { updateGameState } from "@/services/gameStateService";
+import { updateGameState, getCrosswordData } from "@/services/gameStateService";
+import { buildCrosswordState } from "@/components/proyektor/dummy-data";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/admin/_auth/soal-babak")({
   component: AdminSoalBabakPage,
@@ -22,6 +25,30 @@ function AdminSoalBabakPage() {
 
   // ─── WebSocket: skor real-time & timer ──────────────────────────────────────
   useRealtimeSync();
+
+  // ─── Fetch Crossword Data ───────────────────────────────────────────────────
+  const getCrosswordFn = useServerFn(getCrosswordData);
+  useQuery({
+    queryKey: ["crossword-initial"],
+    queryFn: async () => {
+      try {
+        const response = await getCrosswordFn();
+        if (response?.data?.clues) {
+          const crosswordData = buildCrosswordState(response.data.clues);
+          updateState((prev) => ({
+            ...prev,
+            crossword: crosswordData,
+          }));
+        }
+        return response;
+      } catch (error) {
+        console.error("Failed to fetch crossword data:", error);
+        return null;
+      }
+    },
+    refetchOnWindowFocus: false,
+    staleTime: Infinity,
+  });
 
   const handleSetView = async (view: string, round?: number) => {
     // 1. Update local state optimistically

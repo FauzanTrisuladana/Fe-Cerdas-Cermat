@@ -114,29 +114,21 @@ export function Babak3View() {
   }
 
   return (
-    <div className="flex flex-col h-full gap-3 py-2">
-      {/* Header */}
-      <div className="flex items-start justify-between border-b border-white/10 pb-3">
+    <div className="flex h-full gap-4 py-2">
+      {/* Grid TTS — Kiri */}
+      <div className="flex-1 flex items-center justify-center overflow-auto">
+        <CrosswordGrid grid={state.crossword.grid} activeClue={activeClue} />
+      </div>
+
+      {/* Panel Info — Kanan */}
+      <div className="w-[340px] shrink-0 flex flex-col gap-4">
         <div>
-          <h1 className="text-3xl font-black text-white tracking-wide">
-            Babak 3 — Teka Teki Silang
+          <h1 className="text-2xl font-black text-white tracking-wide">
+            Babak 3
           </h1>
-          {activeClue ? (
-            <div className="mt-2 bg-blue-950/80 border border-blue-500/30 rounded-xl px-5 py-2.5 max-w-2xl shadow-lg">
-              <span className="text-amber-400 font-extrabold text-base mr-2 uppercase tracking-wider">
-                Pertanyaan {activeClue.number}{" "}
-                {activeClue.direction === "across" ? "Mendatar" : "Menurun"}:
-              </span>
-              <p className="text-white text-base font-semibold leading-relaxed mt-1">
-                {activeClue.text}
-              </p>
-            </div>
-          ) : (
-            <p className="text-white/50 text-sm mt-1">
-              Silakan pilih clue di panel admin untuk memulai kuis.
-            </p>
-          )}
+          <p className="text-white/40 text-sm">Teka Teki Silang</p>
         </div>
+
         <TimerDisplay
           initialSeconds={state.timerRemaining}
           isRunning={state.isTimerRunning}
@@ -150,10 +142,18 @@ export function Babak3View() {
           }}
           size="md"
         />
-      </div>
 
-      <div className="flex-1 flex items-center justify-center overflow-auto py-4">
-        <CrosswordGrid grid={state.crossword.grid} activeClue={activeClue} />
+        {activeClue ? (
+          <div className="bg-blue-950/80 border border-blue-500/30 rounded-xl px-5 py-4 shadow-lg">
+            <span className="text-amber-400 font-extrabold text-lg uppercase tracking-wider">
+              Pertanyaan {activeClue.number}{" "}
+              {activeClue.direction === "across" ? "Mendatar" : "Menurun"}:
+            </span>
+            <p className="text-white text-xl font-semibold leading-relaxed mt-2">
+              {activeClue.text}
+            </p>
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -168,16 +168,27 @@ function CrosswordGrid({
   grid: CrosswordCell[][];
   activeClue: CrosswordClue | null;
 }) {
-  const CELL_SIZE = 44; // Scale up for projector
+  const numCols = grid[0]?.length ?? 1;
+  const numRows = grid.length;
+  const GAP = 2;
+
+  // Hitung ukuran sel agar grid memenuhi ~95% layar
+  // Layar proyektor: tinggi ~95vh, lebar area kiri ~(100vw - 340px panel kanan)
+  const availableHeight = typeof window !== "undefined" ? window.innerHeight * 0.92 : 700;
+  const availableWidth = typeof window !== "undefined" ? (window.innerWidth - 380) * 0.95 : 800;
+
+  const cellFromHeight = Math.floor((availableHeight - GAP * (numRows - 1)) / numRows);
+  const cellFromWidth = Math.floor((availableWidth - GAP * (numCols - 1)) / numCols);
+  const CELL_SIZE = Math.min(cellFromHeight, cellFromWidth);
 
   return (
     <div
-      className="border-2 border-white/20 rounded-2xl overflow-hidden shadow-2xl p-2 bg-slate-900/60"
+      className="border border-white/10 rounded-xl overflow-auto shadow-2xl p-1.5 bg-slate-900/60 max-h-full"
       style={{
         display: "grid",
-        gridTemplateColumns: `repeat(${grid[0]?.length ?? 1}, ${CELL_SIZE}px)`,
+        gridTemplateColumns: `repeat(${numCols}, ${CELL_SIZE}px)`,
         gridTemplateRows: `repeat(${grid.length}, ${CELL_SIZE}px)`,
-        gap: "4px",
+        gap: `${GAP}px`,
       }}
     >
       {grid.map((row) =>

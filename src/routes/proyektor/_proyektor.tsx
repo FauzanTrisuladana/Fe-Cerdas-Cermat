@@ -2,7 +2,8 @@ import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useRealtimeSync } from "@/hooks/use-realtime-sync";
 import { useGameState } from "@/hooks/use-game-state";
-import { getGameState } from "@/services/gameStateService";
+import { getGameState, getCrosswordData } from "@/services/gameStateService";
+import { buildCrosswordState } from "@/components/proyektor/dummy-data";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 
@@ -38,6 +39,30 @@ function ProyektorLayout() {
     },
     refetchOnWindowFocus: false,
     staleTime: Infinity, // Cukup fetch sekali di awal
+  });
+
+  // 1b. Fetch initial crossword data from server
+  const getCrosswordFn = useServerFn(getCrosswordData);
+  useQuery({
+    queryKey: ["crossword-initial"],
+    queryFn: async () => {
+      try {
+        const response = await getCrosswordFn();
+        if (response?.data?.clues) {
+          const crosswordData = buildCrosswordState(response.data.clues);
+          updateState((prev) => ({
+            ...prev,
+            crossword: crosswordData,
+          }));
+        }
+        return response;
+      } catch (error) {
+        console.error("Failed to fetch crossword data:", error);
+        return null;
+      }
+    },
+    refetchOnWindowFocus: false,
+    staleTime: Infinity,
   });
 
   // 2. Efek untuk otomatis berpindah halaman jika currentView berubah
