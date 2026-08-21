@@ -77,6 +77,15 @@ export function useRealtimeSync() {
     const timerChannel = echo.channel("timer");
 
     timerChannel.listen(".timer.col.activity", (data: TimerData) => {
+      // Tampilkan notifikasi (toast) sesuai dengan state timer yang diterima
+      if (data.ended) {
+        toast.info("Timer dijalankan", { icon: "▶️" });
+      } else if (data.status === "paused") {
+        toast.warning(`Timer dijeda pada sisa ${data.remaining} detik`, { icon: "⏸️" });
+      } else {
+        toast.success(`Timer diatur ke ${data.duration} detik`, { icon: "🔄" });
+      }
+
       const { remaining, isRunning, duration } = calcTimerState(data);
 
       updateState((prev) => ({

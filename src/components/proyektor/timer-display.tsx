@@ -30,10 +30,10 @@ export function TimerDisplay({
   const [seconds, setSeconds] = useState(initialSeconds);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Sync state if initialSeconds changes (e.g. paused/reset)
+  // Sync state if initialSeconds or isRunning changes (e.g. paused/reset/play)
   useEffect(() => {
     setSeconds(initialSeconds);
-  }, [initialSeconds]);
+  }, [initialSeconds, isRunning]);
 
   useEffect(() => {
     if (isRunning && seconds > 0) {

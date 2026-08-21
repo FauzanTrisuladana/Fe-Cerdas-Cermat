@@ -8,6 +8,7 @@ export interface TimerData {
   duration: number;
   ended: string | null;
   status: "paused" | null;
+  remaining: number;
 }
 
 export interface TimerResponse {
@@ -47,12 +48,14 @@ export function calcTimerState(data: TimerData): {
   }
 
   if (data.status === "paused") {
-    // Timer dijeda — duration berisi sisa detik
-    return { remaining: duration, isRunning: false, duration };
+    // Timer dijeda — gunakan remaining dari backend
+    const remaining = Math.max(0, Math.ceil(data.remaining));
+    return { remaining, isRunning: false, duration };
   }
 
-  // Idle — belum play
-  return { remaining: duration, isRunning: false, duration };
+  // Idle — belum play atau sudah reset
+  const remaining = Math.max(0, Math.ceil(data.remaining));
+  return { remaining, isRunning: false, duration };
 }
 
 // ─── API Functions ───────────────────────────────────────────────────────────

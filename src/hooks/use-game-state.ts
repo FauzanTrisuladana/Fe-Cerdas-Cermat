@@ -59,50 +59,59 @@ const DEFAULT_STATE: GameStateData = {
   tampilSkorMode: "all",
 };
 
-export function useGameState() {
-  const [state, setState] = useState<GameStateData>(() => {
-    if (typeof window !== "undefined") {
-      // Cek versi state — jika beda, clear localStorage dan pakai DEFAULT_STATE
-      const savedVersion = localStorage.getItem(STATE_VERSION_KEY);
-      if (savedVersion !== String(STATE_VERSION)) {
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.setItem(STATE_VERSION_KEY, String(STATE_VERSION));
+let globalState: GameStateData = (() => {
+  if (typeof window !== "undefined") {
+    // Cek versi state — jika beda, clear localStorage dan pakai DEFAULT_STATE
+    const savedVersion = localStorage.getItem(STATE_VERSION_KEY);
+    if (savedVersion !== String(STATE_VERSION)) {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.setItem(STATE_VERSION_KEY, String(STATE_VERSION));
+      return DEFAULT_STATE;
+    }
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (_) {
         return DEFAULT_STATE;
       }
-
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (_) {
-          return DEFAULT_STATE;
-        }
-      }
     }
-    return DEFAULT_STATE;
-  });
+  }
+  return DEFAULT_STATE;
+})();
 
-  // Listen to storage events from other tabs
+const listeners = new Set<(state: GameStateData) => void>();
+
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e: StorageEvent) => {
+    if (e.key === STORAGE_KEY && e.newValue) {
+      try {
+        globalState = JSON.parse(e.newValue);
+        listeners.forEach((listener) => listener(globalState));
+      } catch (_) {}
+    }
+  });
+}
+
+export function useGameState() {
+  const [state, setState] = useState<GameStateData>(globalState);
+
   useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEY && e.newValue) {
-        try {
-          setState(JSON.parse(e.newValue));
-        } catch (_) {}
-      }
+    listeners.add(setState);
+    // Pastikan state tersinkron jika ada perubahan saat mount
+    setState(globalState);
+    return () => {
+      listeners.delete(setState);
     };
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  // Update helper
   const updateState = useCallback(
     (updater: (prev: GameStateData) => GameStateData) => {
-      setState((prev) => {
-        const next = updater(prev);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-        return next;
-      });
+      globalState = updater(globalState);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(globalState));
+      // Notify all listening components di tab ini
+      listeners.forEach((listener) => listener(globalState));
     },
     [],
   );
