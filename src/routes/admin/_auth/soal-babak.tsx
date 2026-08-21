@@ -48,16 +48,8 @@ function AdminSoalBabakPage() {
     updateState((prev) => ({
       ...prev,
       babak2QuestionIdx: idx,
-      babak2RevealedCount: 1, // Reset reveal count to 1 for new question
       timerRemaining: 90, // Reset timer
       isTimerRunning: false,
-    }));
-  };
-
-  const handleSetRevealCount = async (count: number) => {
-    updateState((prev) => ({
-      ...prev,
-      babak2RevealedCount: count,
     }));
   };
 
@@ -219,7 +211,6 @@ function AdminSoalBabakPage() {
             <Babak2Controls
               state={state}
               onSetQuestion={handleSetQuestionB2}
-              onSetRevealCount={handleSetRevealCount}
             />
           )}
 

@@ -44,8 +44,7 @@ export interface Question {
 export interface ImageQuestion {
   id: number;
   title: string; // jawaban / nama gambar
-  images: string[]; // path ke 4 gambar (index 0-3)
-  revealedCount: number; // berapa gambar yang sudah ditampilkan (1-4)
+  image: string; // path ke gambar
 }
 
 // ─── Babak 3: Teka-Teki Silang ──────────────────────────────────────────────

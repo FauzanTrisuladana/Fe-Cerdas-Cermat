@@ -20,7 +20,6 @@ export interface GameStateData {
   timerEnded: string | null; // ISO timestamp dari backend (kapan timer habis)
   // Babak 2 (Tebak Gambar)
   babak2QuestionIdx: number;
-  babak2RevealedCount: number;
   // Babak 3 (TTS)
   crossword: CrosswordState;
   activeClueNum: number | null;
@@ -45,7 +44,6 @@ const DEFAULT_STATE: GameStateData = {
   isTimerRunning: false,
   timerEnded: null,
   babak2QuestionIdx: 0,
-  babak2RevealedCount: 1,
   crossword: DUMMY_CROSSWORD,
   activeClueNum: null,
   activeClueDir: null,

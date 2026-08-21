@@ -138,41 +138,13 @@ export function Babak2View() {
         />
       </div>
 
-      {/* Grid 2x2 gambar */}
-      <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-4 max-h-[70vh]">
-        {currentQuestion.images.map((src, imgIdx) => {
-          const isRevealed = imgIdx < state.babak2RevealedCount;
-          return (
-            <div
-              key={imgIdx}
-              className={cn(
-                "relative rounded-2xl overflow-hidden border-2 bg-slate-900 flex items-center justify-center transition-all duration-500 shadow-2xl",
-                isRevealed
-                  ? "border-white/20 opacity-100 scale-100"
-                  : "border-white/5 opacity-50 scale-95",
-              )}
-            >
-              {isRevealed ? (
-                <img
-                  src={src}
-                  alt={`Gambar ${imgIdx + 1}`}
-                  className="w-full h-full object-cover animate-in fade-in zoom-in-95 duration-500"
-                />
-              ) : (
-                <div className="flex flex-col items-center gap-2">
-                  <span className="text-white/20 text-7xl font-black">?</span>
-                  <span className="text-white/40 text-xs font-semibold uppercase tracking-widest">
-                    Terkunci
-                  </span>
-                </div>
-              )}
-              {/* Nomor gambar */}
-              <div className="absolute top-3 left-3 bg-black/75 border border-white/10 text-white text-sm font-bold w-8 h-8 rounded-full flex items-center justify-center shadow-lg">
-                {imgIdx + 1}
-              </div>
-            </div>
-          );
-        })}
+      {/* Gambar Soal */}
+      <div className="flex-1 max-h-[70vh] rounded-2xl overflow-hidden border-2 border-white/20 bg-slate-900 flex items-center justify-center shadow-2xl relative">
+        <img
+          src={currentQuestion.image}
+          alt={`Soal ${state.babak2QuestionIdx + 1}`}
+          className="w-full h-full object-contain animate-in fade-in zoom-in-95 duration-500"
+        />
       </div>
     </div>
   );

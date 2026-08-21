@@ -42,57 +42,27 @@ export const DUMMY_IMAGE_QUESTIONS: ImageQuestion[] = [
   {
     id: 1,
     title: "Kalimantan Utara",
-    images: [
-      "https://picsum.photos/seed/kalut1/400/300",
-      "https://picsum.photos/seed/kalut2/400/300",
-      "https://picsum.photos/seed/kalut3/400/300",
-      "https://picsum.photos/seed/kalut4/400/300",
-    ],
-    revealedCount: 1,
+    image: "https://picsum.photos/seed/kalut1/800/600",
   },
   {
     id: 2,
     title: "Sulawesi Selatan",
-    images: [
-      "https://picsum.photos/seed/sulsel1/400/300",
-      "https://picsum.photos/seed/sulsel2/400/300",
-      "https://picsum.photos/seed/sulsel3/400/300",
-      "https://picsum.photos/seed/sulsel4/400/300",
-    ],
-    revealedCount: 1,
+    image: "https://picsum.photos/seed/sulsel1/800/600",
   },
   {
     id: 3,
     title: "Jawa Tengah",
-    images: [
-      "https://picsum.photos/seed/jateng1/400/300",
-      "https://picsum.photos/seed/jateng2/400/300",
-      "https://picsum.photos/seed/jateng3/400/300",
-      "https://picsum.photos/seed/jateng4/400/300",
-    ],
-    revealedCount: 1,
+    image: "https://picsum.photos/seed/jateng1/800/600",
   },
   {
     id: 4,
     title: "Bali",
-    images: [
-      "https://picsum.photos/seed/bali1/400/300",
-      "https://picsum.photos/seed/bali2/400/300",
-      "https://picsum.photos/seed/bali3/400/300",
-      "https://picsum.photos/seed/bali4/400/300",
-    ],
-    revealedCount: 1,
+    image: "https://picsum.photos/seed/bali1/800/600",
   },
   {
     id: 5,
     title: "Papua Barat Daya",
-    images: [
-      "https://picsum.photos/seed/papua1/400/300",
-      "https://picsum.photos/seed/papua2/400/300",
-      "https://picsum.photos/seed/papua3/400/300",
-      "https://picsum.photos/seed/papua4/400/300",
-    ],
-    revealedCount: 1,
+    image: "https://picsum.photos/seed/papua1/800/600",
   },
 ];
 
