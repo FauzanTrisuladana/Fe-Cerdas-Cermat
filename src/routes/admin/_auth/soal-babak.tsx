@@ -9,7 +9,7 @@ import { MiniScoreboard } from "@/components/soal-babak/mini-scoreboard";
 import HeaderComp from "@/components/shared/header-comp";
 import { Monitor } from "lucide-react";
 import type { CrosswordClue } from "@/components/proyektor/types";
-import { updateGameState, getCrosswordData } from "@/services/gameStateService";
+import { updateGameState, getCrosswordData, getBabak2Data } from "@/services/gameStateService";
 import { buildCrosswordState } from "@/components/proyektor/dummy-data";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
@@ -50,6 +50,35 @@ function AdminSoalBabakPage() {
     staleTime: Infinity,
   });
 
+  // ─── Fetch Babak 2 Data ─────────────────────────────────────────────────────
+  const getBabak2Fn = useServerFn(getBabak2Data);
+  useQuery({
+    queryKey: ["babak2-initial"],
+    queryFn: async () => {
+      try {
+        const response = await getBabak2Fn();
+        if (response?.data?.questions) {
+          const questions = response.data.questions.map((q: any) => ({
+            id: q.id,
+            number: q.number,
+            title: q.answer,
+            image: q.text, // URL gambar
+          }));
+          updateState((prev) => ({
+            ...prev,
+            babak2Questions: questions,
+          }));
+        }
+        return response;
+      } catch (error) {
+        console.error("Failed to fetch babak 2 data:", error);
+        return null;
+      }
+    },
+    refetchOnWindowFocus: false,
+    staleTime: Infinity,
+  });
+
   const handleSetView = async (view: string, round?: number) => {
     // 1. Update local state optimistically
     updateState((prev) => ({
@@ -57,12 +86,16 @@ function AdminSoalBabakPage() {
       currentView: view,
       activeRound: round ?? prev.activeRound,
       isTimerRunning: false, // Stop timer on transition
+      activeBabak2Num: null, // Clear active babak 2 image when changing view
     }));
 
     // 2. Broadcast ke proyektor via API
     try {
       await updateGameState({
-        data: { view },
+        data: { 
+          view,
+          babak2_active_num: 0 // Explicitly set to 0 in DB
+        },
       });
     } catch (error) {
       toast.error("Gagal melakukan broadcast pindah halaman.");
@@ -71,13 +104,23 @@ function AdminSoalBabakPage() {
 
   // ─── BABAK 2 (Tebak Gambar) Actions ────────────────────────────────────────
 
-  const handleSetQuestionB2 = async (idx: number) => {
+  const handleSetQuestionB2 = async (num: number) => {
     updateState((prev) => ({
       ...prev,
-      babak2QuestionIdx: idx,
+      activeBabak2Num: num,
       timerRemaining: 90, // Reset timer
       isTimerRunning: false,
     }));
+
+    try {
+      await updateGameState({
+        data: {
+          babak2_active_num: num,
+        },
+      });
+    } catch (error) {
+      toast.error("Gagal sinkronisasi soal ke proyektor.");
+    }
   };
 
   // ─── BABAK 3 (TTS) Actions ──────────────────────────────────────────────────

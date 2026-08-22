@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import { TimScoreCard } from "./tim-score-card";
 import { TimerDisplay } from "./timer-display";
 import { useGameState } from "@/hooks/use-game-state";
-import { DUMMY_IMAGE_QUESTIONS } from "./dummy-data";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getScoreDetail } from "@/services/scoreService";
@@ -65,8 +64,8 @@ export function Babak2View() {
   }, [detailData, updateState]);
 
   const currentQuestion =
-    DUMMY_IMAGE_QUESTIONS[state.babak2QuestionIdx] || DUMMY_IMAGE_QUESTIONS[0];
-  const totalQuestions = DUMMY_IMAGE_QUESTIONS.length;
+    state.babak2Questions.find(q => q.number === state.activeBabak2Num) || null;
+  const totalQuestions = state.babak2Questions.length;
 
   // ─── Tampilan transisi skor ───────────────────────────────────────────────
   if (state.currentView === "score-transition") {
@@ -110,6 +109,15 @@ export function Babak2View() {
     );
   }
 
+  // Jika tidak ada data soal
+  if (!currentQuestion) {
+    return (
+      <div className="flex flex-col h-full items-center justify-center">
+        <p className="text-white text-xl animate-pulse">Menunggu soal babak 2 dimuat...</p>
+      </div>
+    );
+  }
+
   // ─── Tampilan soal gambar ─────────────────────────────────────────────────
   return (
     <div className="flex flex-col h-full gap-4 py-2">
@@ -120,7 +128,7 @@ export function Babak2View() {
             Babak 2 — Tebak Gambar
           </h1>
           <p className="text-blue-400 text-sm font-semibold uppercase tracking-wider mt-0.5">
-            Soal {state.babak2QuestionIdx + 1} dari {totalQuestions}
+            Soal {currentQuestion.number} dari {totalQuestions}
           </p>
         </div>
         <TimerDisplay
@@ -142,7 +150,7 @@ export function Babak2View() {
       <div className="flex-1 max-h-[70vh] rounded-2xl overflow-hidden border-2 border-white/20 bg-slate-900 flex items-center justify-center shadow-2xl relative">
         <img
           src={currentQuestion.image}
-          alt={`Soal ${state.babak2QuestionIdx + 1}`}
+          alt={`Soal ${currentQuestion.number}`}
           className="w-full h-full object-contain animate-in fade-in zoom-in-95 duration-500"
         />
       </div>

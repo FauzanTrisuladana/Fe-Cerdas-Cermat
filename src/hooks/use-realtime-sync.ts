@@ -263,6 +263,7 @@ export function useRealtimeSync() {
           ...prev,
           currentView: data.view,
           activeRound: parseInt(data.babak) || prev.activeRound,
+          activeBabak2Num: data.babak2_active_num !== undefined ? data.babak2_active_num : prev.activeBabak2Num,
           activeClueNum: data.tts_active_num ?? prev.activeClueNum,
           activeClueDir: data.tts_active_dir ?? prev.activeClueDir,
           crossword: nextCrossword,

@@ -2,7 +2,7 @@ import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useRealtimeSync } from "@/hooks/use-realtime-sync";
 import { useGameState } from "@/hooks/use-game-state";
-import { getGameState, getCrosswordData } from "@/services/gameStateService";
+import { getGameState, getCrosswordData, getBabak2Data } from "@/services/gameStateService";
 import { buildCrosswordState } from "@/components/proyektor/dummy-data";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -29,6 +29,7 @@ function ProyektorLayout() {
             ...prev,
             currentView: response.data.view,
             activeRound: parseInt(response.data.babak) || prev.activeRound,
+            activeBabak2Num: response.data.babak2_active_num ?? prev.activeBabak2Num,
           }));
         }
         return response;
@@ -58,6 +59,35 @@ function ProyektorLayout() {
         return response;
       } catch (error) {
         console.error("Failed to fetch crossword data:", error);
+        return null;
+      }
+    },
+    refetchOnWindowFocus: false,
+    staleTime: Infinity,
+  });
+
+  // 1c. Fetch initial babak 2 data
+  const getBabak2Fn = useServerFn(getBabak2Data);
+  useQuery({
+    queryKey: ["babak2-initial"],
+    queryFn: async () => {
+      try {
+        const response = await getBabak2Fn();
+        if (response?.data?.questions) {
+          const questions = response.data.questions.map((q: any) => ({
+            id: q.id,
+            number: q.number,
+            title: q.answer,
+            image: q.text, // URL gambar
+          }));
+          updateState((prev) => ({
+            ...prev,
+            babak2Questions: questions,
+          }));
+        }
+        return response;
+      } catch (error) {
+        console.error("Failed to fetch babak 2 data:", error);
         return null;
       }
     },

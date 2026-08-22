@@ -5,14 +5,36 @@ import { handleApiError } from "./errorService";
 export interface GameStateAPIResponse {
   view: string;
   babak: string;
+  babak2_active_num: number | null;
 }
 
 export interface UpdateGameStatePayload {
   view?: string;
+  babak2_active_num?: number;
   tts_active_num?: number;
   tts_active_dir?: string;
   tts_action?: string;
   tts_input?: string;
+}
+
+export interface ImageQuestion {
+  id: number;
+  number: number;
+  title: string;
+  image: string;
+}
+
+interface Babak2Response {
+  status: string;
+  message: string;
+  data: {
+    questions: {
+      id: number;
+      number: number;
+      question: string;
+      answer: string;
+    }[];
+  };
 }
 
 interface GameStateResponse {
@@ -59,7 +81,18 @@ export interface CrosswordAPIResponse {
 export const getCrosswordData = createServerFn({ method: "GET" }).handler(
   async () => {
     try {
-      const response = await api.get<{ status: string; data: CrosswordAPIResponse }>("/crossword");
+      const response = await api.get<{ status: string; data: CrosswordAPIResponse }>("/questions/babak3");
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  }
+);
+
+export const getBabak2Data = createServerFn({ method: "GET" }).handler(
+  async () => {
+    try {
+      const response = await api.get<Babak2Response>("/questions/babak2");
       return response.data;
     } catch (error) {
       handleApiError(error);

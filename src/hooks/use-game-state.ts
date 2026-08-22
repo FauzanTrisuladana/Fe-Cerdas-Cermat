@@ -9,6 +9,8 @@ import {
   buildCrosswordState,
 } from "@/components/proyektor/dummy-data";
 
+import type { ImageQuestion } from "@/services/gameStateService";
+
 export interface GameStateData {
   teams: Team[];
   activeRound: number; // 1-4
@@ -19,7 +21,8 @@ export interface GameStateData {
   isTimerRunning: boolean;
   timerEnded: string | null; // ISO timestamp dari backend (kapan timer habis)
   // Babak 2 (Tebak Gambar)
-  babak2QuestionIdx: number;
+  babak2Questions: ImageQuestion[];
+  activeBabak2Num: number | null;
   // Babak 3 (TTS)
   crossword: CrosswordState;
   activeClueNum: number | null;
@@ -32,7 +35,7 @@ export interface GameStateData {
 const STORAGE_KEY = "cc_game_state_v1";
 // Naikkan versi ini setiap kali DEFAULT_STATE berubah secara breaking
 // agar localStorage lama (yg menyimpan dummy scores) otomatis di-clear
-const STATE_VERSION = 4;
+const STATE_VERSION = 5;
 const STATE_VERSION_KEY = "cc_game_state_version";
 
 const DEFAULT_STATE: GameStateData = {
@@ -43,7 +46,8 @@ const DEFAULT_STATE: GameStateData = {
   timerRemaining: 90,
   isTimerRunning: false,
   timerEnded: null,
-  babak2QuestionIdx: 0,
+  babak2Questions: [],
+  activeBabak2Num: null,
   crossword: buildCrosswordState([]),
   activeClueNum: null,
   activeClueDir: null,
