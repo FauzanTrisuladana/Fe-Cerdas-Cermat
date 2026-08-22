@@ -104,6 +104,25 @@ function AdminSoalBabakPage() {
     }
   };
 
+  const handleClearClue = async () => {
+    updateState((prev) => ({
+      ...prev,
+      activeClueNum: null,
+      activeClueDir: null,
+    }));
+    setTtsInput("");
+
+    try {
+      await updateGameState({
+        data: {
+          tts_action: "clear_active",
+        },
+      });
+    } catch (error) {
+      toast.error("Gagal melakukan sinkronisasi batal pilih.");
+    }
+  };
+
   const activeClue =
     state.crossword.clues.find(
       (c) =>
@@ -299,6 +318,7 @@ function AdminSoalBabakPage() {
               onRevealTTS={handleRevealTTS}
               onLockTTS={handleLockTTS}
               onSelectClue={handleSelectClue}
+              onClearClue={handleClearClue}
               ttsInput={ttsInput}
               onTtsInputChange={setTtsInput}
             />

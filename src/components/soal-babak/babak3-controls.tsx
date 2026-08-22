@@ -18,6 +18,7 @@ interface Babak3ControlsProps {
   onRevealTTS: () => void;
   onLockTTS: () => void;
   onSelectClue: (clue: CrosswordClue) => void;
+  onClearClue: () => void;
   ttsInput: string;
   onTtsInputChange: (value: string) => void;
 }
@@ -28,6 +29,7 @@ export function Babak3Controls({
   onRevealTTS,
   onLockTTS,
   onSelectClue,
+  onClearClue,
   ttsInput,
   onTtsInputChange,
 }: Babak3ControlsProps) {
@@ -53,12 +55,24 @@ export function Babak3Controls({
             <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
               Pertanyaan Aktif
             </span>
-            {activeClue && (
-              <Badge variant="outline" className="font-extrabold uppercase">
-                {activeClue.direction === "across" ? "Mendatar →" : "Menurun ↓"}{" "}
-                {activeClue.number}
-              </Badge>
-            )}
+            <div className="flex items-center gap-2">
+              {activeClue && (
+                <>
+                  <Badge variant="outline" className="font-extrabold uppercase">
+                    {activeClue.direction === "across" ? "Mendatar →" : "Menurun ↓"}{" "}
+                    {activeClue.number}
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onClearClue}
+                    className="h-6 px-2 text-xs text-rose-500 hover:text-rose-700 hover:bg-rose-50"
+                  >
+                    Batal Pilih
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
 
           {activeClue ? (
