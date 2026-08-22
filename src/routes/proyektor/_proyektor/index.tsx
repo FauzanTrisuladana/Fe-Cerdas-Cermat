@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Monitor, Trophy } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { Trophy } from "lucide-react";
 
 export const Route = createFileRoute("/proyektor/_proyektor/")({
   component: ProyektorJudul,
@@ -57,33 +57,16 @@ function ProyektorJudul() {
         <p className="text-white/60 text-xl font-medium">
           Perumahan Nogotirto V — RT 01, 02, 03, 04, 05
         </p>
-      </div>
 
-      {/* Link navigasi ke halaman lain (DEV only) */}
-      {import.meta.env.DEV && (
-        <div className="relative z-10 flex flex-wrap gap-2 justify-center">
-          <p className="text-white/30 text-xs w-full text-center">
-            [DEV] Navigasi cepat
-          </p>
-          {[1, 2, 3, 4].map((b) => (
-            <Link
-              key={b}
-              to={("/proyektor/babak/" + b) as any}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs rounded-full font-semibold transition-all"
-            >
-              <Monitor className="w-3 h-3" />
-              Babak {b}
-            </Link>
-          ))}
-          <Link
-            to="/proyektor/skor"
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs rounded-full font-semibold transition-all"
-          >
-            <Trophy className="w-3 h-3" />
-            Skor
-          </Link>
+        {/* Logo Sponsor */}
+        <div className="mt-8 w-full max-w-5xl bg-white p-6 rounded-3xl shadow-xl flex justify-center">
+          <img
+            src="/Sponsor.png"
+            alt="Sponsor"
+            className="w-full h-auto object-contain"
+          />
         </div>
-      )}
+      </div>
     </div>
   );
 }
