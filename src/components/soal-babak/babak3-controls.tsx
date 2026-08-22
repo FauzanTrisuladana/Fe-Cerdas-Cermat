@@ -16,6 +16,7 @@ interface Babak3ControlsProps {
   state: GameStateData;
   onCheckTTS: () => void;
   onRevealTTS: () => void;
+  onLockTTS: () => void;
   onSelectClue: (clue: CrosswordClue) => void;
   ttsInput: string;
   onTtsInputChange: (value: string) => void;
@@ -25,6 +26,7 @@ export function Babak3Controls({
   state,
   onCheckTTS,
   onRevealTTS,
+  onLockTTS,
   onSelectClue,
   ttsInput,
   onTtsInputChange,
@@ -85,10 +87,17 @@ export function Babak3Controls({
                     }}
                   />
                   <Button
+                    onClick={onLockTTS}
+                    variant="outline"
+                    className="gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50"
+                  >
+                    Lock Input
+                  </Button>
+                  <Button
                     onClick={onCheckTTS}
                     className="gap-1.5 bg-blue-600 hover:bg-blue-700"
                   >
-                    <Check className="w-4 h-4" /> Verify
+                    <Check className="w-4 h-4" /> Check
                   </Button>
                   <Button
                     onClick={onRevealTTS}

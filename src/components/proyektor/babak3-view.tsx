@@ -239,12 +239,12 @@ function CrosswordGrid({
               <span
                 className={cn(
                   "text-lg font-black transition-all duration-300",
-                  cell.revealed
+                  cell.revealed || cell.tempRevealed
                     ? "opacity-100 scale-100"
                     : "opacity-0 scale-75",
                 )}
               >
-                {cell.letter}
+                {cell.revealed ? cell.letter : (cell.tempLetter || "")}
               </span>
             </div>
           );

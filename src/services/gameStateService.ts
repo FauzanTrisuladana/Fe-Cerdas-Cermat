@@ -8,7 +8,11 @@ export interface GameStateAPIResponse {
 }
 
 export interface UpdateGameStatePayload {
-  view: string;
+  view?: string;
+  tts_active_num?: number;
+  tts_active_dir?: string;
+  tts_action?: string;
+  tts_input?: string;
 }
 
 interface GameStateResponse {

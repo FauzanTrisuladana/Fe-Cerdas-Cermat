@@ -108,12 +108,166 @@ export function useRealtimeSync() {
     const gameStateChannel = echo.channel("game-state");
 
     gameStateChannel.listen(".game.state.updated", (data: any) => {
-      // Data dari backend { view: "babak1", babak: "1" }
-      updateState((prev) => ({
-        ...prev,
-        currentView: data.view,
-        activeRound: parseInt(data.babak) || prev.activeRound,
-      }));
+      // Data dari backend { view: "babak1", babak: "1", tts_active_num: 1, tts_active_dir: 'across', tts_action: 'reveal' }
+      updateState((prev) => {
+        let nextCrossword = prev.crossword;
+
+        // Jika trigger "lock_input", tampilkan input statis di proyektor tanpa animasi
+        if (data.tts_action === "lock_input" && data.tts_active_num && data.tts_active_dir) {
+          const activeClue = nextCrossword.clues.find(
+            (c) => c.number === data.tts_active_num && c.direction === data.tts_active_dir
+          );
+
+          if (activeClue) {
+            const tempGrid = nextCrossword.grid.map((row) =>
+              row.map((cell) => {
+                const inRange =
+                  activeClue.direction === "across"
+                    ? cell.row === activeClue.startRow &&
+                      cell.col >= activeClue.startCol &&
+                      cell.col < activeClue.startCol + activeClue.answer.length
+                    : cell.col === activeClue.startCol &&
+                      cell.row >= activeClue.startRow &&
+                      cell.row < activeClue.startRow + activeClue.answer.length;
+                
+                if (inRange) {
+                  const letterIdx =
+                    activeClue.direction === "across"
+                      ? cell.col - activeClue.startCol
+                      : cell.row - activeClue.startRow;
+                  const inputChar = (data.tts_input || "")[letterIdx];
+                  
+                  return { 
+                    ...cell, 
+                    highlight: undefined, // ensure no red/green highlight
+                    tempLetter: inputChar ? inputChar.toUpperCase() : "",
+                    tempRevealed: true,
+                  };
+                }
+                return cell;
+              })
+            );
+            nextCrossword = { ...nextCrossword, grid: tempGrid };
+          }
+        }
+
+        // Jika ada trigger "check_wrong", lakukan highlight merah sementara dan tampilkan huruf yang salah
+        if (data.tts_action === "check_wrong" && data.tts_active_num && data.tts_active_dir) {
+          const activeClue = nextCrossword.clues.find(
+            (c) => c.number === data.tts_active_num && c.direction === data.tts_active_dir
+          );
+
+          if (activeClue) {
+            const tempGrid = nextCrossword.grid.map((row) =>
+              row.map((cell) => {
+                const inRange =
+                  activeClue.direction === "across"
+                    ? cell.row === activeClue.startRow &&
+                    cell.col >= activeClue.startCol &&
+                    cell.col < activeClue.startCol + activeClue.answer.length
+                    : cell.col === activeClue.startCol &&
+                    cell.row >= activeClue.startRow &&
+                    cell.row < activeClue.startRow + activeClue.answer.length;
+
+                if (inRange) {
+                  const letterIdx =
+                    activeClue.direction === "across"
+                      ? cell.col - activeClue.startCol
+                      : cell.row - activeClue.startRow;
+                  const inputChar = (data.tts_input || "")[letterIdx];
+
+                  return {
+                    ...cell,
+                    highlight: "wrong" as const,
+                    // Kita simpan huruf salah ke property baru atau ganti sementara (disini ganti sementara)
+                    tempLetter: inputChar ? inputChar.toUpperCase() : "",
+                    tempRevealed: true,
+                  };
+                }
+                return cell;
+              })
+            );
+            nextCrossword = { ...nextCrossword, grid: tempGrid };
+
+            // Auto-clear highlight dan huruf salah setelah 1.5 detik
+            setTimeout(() => {
+              updateState((s) => {
+                const clearGrid = s.crossword.grid.map((row) =>
+                  row.map((cell) =>
+                    cell.highlight === "wrong" ? { ...cell, highlight: undefined, tempRevealed: undefined } : cell
+                  )
+                );
+                return { ...s, crossword: { ...s.crossword, grid: clearGrid } };
+              });
+            }, 1500);
+          }
+        }
+
+        // Jika ada trigger "reveal", lakukan highlight hijau dan set revealed = true
+        if (data.tts_action === "reveal" && data.tts_active_num && data.tts_active_dir) {
+          const activeClue = nextCrossword.clues.find(
+            (c) => c.number === data.tts_active_num && c.direction === data.tts_active_dir
+          );
+
+          if (activeClue) {
+            const nextGrid = nextCrossword.grid.map((row) =>
+              row.map((cell) => {
+                const inRange =
+                  activeClue.direction === "across"
+                    ? cell.row === activeClue.startRow &&
+                    cell.col >= activeClue.startCol &&
+                    cell.col < activeClue.startCol + activeClue.answer.length
+                    : cell.col === activeClue.startCol &&
+                    cell.row >= activeClue.startRow &&
+                    cell.row < activeClue.startRow + activeClue.answer.length;
+
+                if (inRange) {
+                  const letterIdx =
+                    activeClue.direction === "across"
+                      ? cell.col - activeClue.startCol
+                      : cell.row - activeClue.startRow;
+                  return {
+                    ...cell,
+                    letter: activeClue.answer[letterIdx],
+                    revealed: true,
+                    highlight: "correct" as const,
+                  };
+                }
+                return cell;
+              })
+            );
+
+            const nextClues = nextCrossword.clues.map((c) =>
+              c.number === data.tts_active_num && c.direction === data.tts_active_dir
+                ? { ...c, answered: true }
+                : c
+            );
+
+            nextCrossword = { ...nextCrossword, grid: nextGrid, clues: nextClues };
+
+            // Auto-clear highlight hijau setelah 3 detik
+            setTimeout(() => {
+              updateState((s) => {
+                const clearGrid = s.crossword.grid.map((row) =>
+                  row.map((cell) =>
+                    cell.highlight === "correct" ? { ...cell, highlight: undefined } : cell
+                  )
+                );
+                return { ...s, crossword: { ...s.crossword, grid: clearGrid } };
+              });
+            }, 3000);
+          }
+        }
+
+        return {
+          ...prev,
+          currentView: data.view,
+          activeRound: parseInt(data.babak) || prev.activeRound,
+          activeClueNum: data.tts_active_num ?? prev.activeClueNum,
+          activeClueDir: data.tts_active_dir ?? prev.activeClueDir,
+          crossword: nextCrossword,
+        };
+      });
     });
 
     return () => {

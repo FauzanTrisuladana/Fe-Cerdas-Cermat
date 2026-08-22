@@ -52,8 +52,10 @@ export interface ImageQuestion {
 export interface CrosswordCell {
   row: number;
   col: number;
-  letter: string;
-  revealed: boolean;
+  letter?: string;
+  tempLetter?: string;
+  revealed?: boolean;
+  tempRevealed?: boolean;
   isBlocked: boolean; // kotak hitam
   number?: number; // nomor clue
   highlight?: "active" | "correct" | "wrong";
